@@ -1,10 +1,12 @@
 import type { ReportData } from "@/types/report";
 
-export const report: ReportData = {
+export const defaultReport: ReportData = {
   title:
     "Propaganda: An Analysis of Extremist Campaigns Targeting the Bangladesh Armed Forces",
   author: "Hasan Al Mahmud",
   date: "March 20, 2026",
+  heroTagline:
+    "How extremist narratives targeted Bangladesh's Armed Forces across public social media spaces.",
   importantDataNote:
     "The combined follower figure is an aggregate of publicly visible follower counts from 38 accounts. It must not be interpreted as unique audience reach, impressions, or verified exposure.",
   openingStatistics: [
@@ -45,7 +47,6 @@ export const report: ReportData = {
       shortLabel: "Al-Qaeda / overlapping TTP",
       value: 22,
       description: "Profiles classified by researchers as aligned with Al-Qaeda narratives, with overlapping TTP ties noted in the published report.",
-      reviewStatus: "Methodology clarification required",
       overlapNote:
         "This report labels this category as including overlapping TTP ties. The exact account-level overlap requires editorial clarification.",
     },
@@ -55,7 +56,6 @@ export const report: ReportData = {
       shortLabel: "TTP",
       value: 12,
       description: "Profiles classified by researchers as aligned with Tehrik-i-Taliban Pakistan-related material.",
-      reviewStatus: "Analysis",
     },
     {
       id: "jmb",
@@ -63,7 +63,6 @@ export const report: ReportData = {
       shortLabel: "JMB",
       value: 7,
       description: "Profiles classified by researchers as aligned with Jamaat-ul-Mujahideen Bangladesh-related material.",
-      reviewStatus: "Analysis",
     },
     {
       id: "isis",
@@ -71,7 +70,6 @@ export const report: ReportData = {
       shortLabel: "ISIS",
       value: 4,
       description: "Profiles classified by researchers as aligned with ISIS-related material.",
-      reviewStatus: "Analysis",
     },
     {
       id: "unclassified-general",
@@ -79,7 +77,6 @@ export const report: ReportData = {
       shortLabel: "Unclassified / general",
       value: 16,
       description: "Profiles placed outside named categories or treated as general extremist content within the analysed sample.",
-      reviewStatus: "Analysis",
     },
   ],
   identityCategories: [
@@ -112,95 +109,164 @@ export const report: ReportData = {
       id: "deployments",
       title: "Delegitimising international deployments and UN missions",
       description:
-        "Future analysis will show how peacekeeping and international deployments were reframed in hostile religious and political terms.",
+        "The network reframes Bangladesh's UN peacekeeping role as apostasy and service to Western imperialism. When 99 Navy personnel deployed to South Sudan in December 2025, extremist pages recast the mission as defending a \"Christian state\" carved from Muslim Sudan. In January 2026, ahead of any confirmed decision on a Gaza deployment, the same framing was pushed pre-emptively to shape public sentiment in advance.",
     },
     {
       id: "grief",
       title: "Hijacking national grief and public discourse",
       description:
-        "This thread will document how moments of mourning and public discussion were targeted by anonymised accounts.",
+        "Condolence posts from major political figures and parties become the network's most effective distribution channel. After the December 2025 Abyei, Sudan drone strike killed six peacekeepers, accounts swarmed the resulting condolence posts to deny the dead any martyrdom status, reframing loss of military life as deserved.",
     },
     {
       id: "unrest",
       title: "Exploiting domestic unrest and law-enforcement incidents",
       description:
-        "This category will separate documented incident references from analysis of opportunistic narrative framing.",
+        "Routine crowd-control and law-enforcement actions are stripped of civic context and re-cast as religious oppression. The November 2025 Dhanmondi 32 dispersal, and the April 2025 and March 2025 protest incidents, were each reframed within hours as an \"apostate\" army attacking devout Muslims.",
     },
     {
       id: "theology",
       title: "Theological justification for real-world violence",
       description:
-        "This section requires careful editorial review because it contains references to incitement and violent rhetoric.",
+        "The most severe category: long-form theological posts arguing that military, police, and RAB personnel meet defined criteria that make violence against them permissible. This is incitement, not commentary, and is treated here with the highest evidence and legal-review bar on the site.",
     },
   ],
   timeline: [
     {
       year: "2015",
-      title: "Foundational narrative documented",
+      title: "Foundational fatwa published",
       description:
-        "A future timeline entry will explain the documented origin of the anti-military narrative without linking to extremist sources.",
+        "An AQIS-affiliated Bengali website publishes a fatwa declaring the Bangladesh Army a \"murtad\" (apostate) institution, arguing the military exists to protect secular rulers (\"taghut\") and foreign interests rather than Islam.",
     },
     {
-      year: "2024-early 2026",
-      title: "Observation period",
+      year: "2024 – early 2026",
+      title: "Observation window",
       description:
-        "The interactive edition will identify the observed period and the evidence boundaries used by researchers.",
+        "The 61-profile dataset was drawn from public Facebook activity across this period, using OSINT scraping of timestamps, post text, account metadata, and follower counts.",
     },
     {
-      year: "2025-2026",
-      title: "Incident-driven campaign activity",
+      year: "Mar–Apr 2025",
+      title: "Domestic protest incidents exploited",
       description:
-        "Later versions will connect public events to documented waves of narrative activity, with limitations shown beside the evidence.",
+        "The Hefazat-e-Islam protests over Israeli strikes and the Kohinoor chemical-factory protests in Dhaka are reframed as the military attacking devout Muslims rather than responding to civil unrest.",
+    },
+    {
+      year: "Nov 2025",
+      title: "Dhanmondi 32 dispersal",
+      description:
+        "Security forces disperse protesters at the Dhanmondi 32 memorial site; the network rallies around the incident with a coordinated hashtag campaign branding the army \"the pet dog of taghut rulers.\"",
+    },
+    {
+      year: "Dec 2025",
+      title: "Abyei, Sudan drone strike and hijacked mourning",
+      description:
+        "A drone strike kills six Bangladeshi UN peacekeepers. Condolence posts from Bangladesh's Prime Minister and the Jamaat-e-Islami page are flooded with comments labelling the dead \"murtad.\" Around the same period, a separate Navy deployment to South Sudan is reframed as defending a \"Christian state.\"",
+    },
+    {
+      year: "Jan 2026",
+      title: "Pre-emptive narrative shaping on Gaza",
+      description:
+        "Ahead of any confirmed Bangladeshi role in a Gaza peacekeeping force, the network floods social media with \"murtad\" framing to pre-shape public opinion against the prospect.",
     },
   ],
-  evidencePreview: [
+  methodologyStages: [
     {
-      id: "EV-001",
-      accountLabel: "Account A",
-      date: "December 2025",
-      type: "Public post share",
-      verificationStatus: "Editorial review required",
-      redactionStatus: "Redaction required",
-      editorialStatus: "Editorial review required",
-      translationStatus: "Translation review required",
-      description:
-        "An anonymised example showing how a condolence message was reframed with hostile terminology.",
+      title: "Sample selection",
+      detail:
+        "61 highly active public Facebook profiles and pages, observed between 2024 and early 2026, selected for volume and consistency of anti-military content.",
     },
     {
-      id: "EV-002",
-      accountLabel: "Account B",
-      date: "December 2025",
-      type: "Comment cluster",
-      verificationStatus: "Legal review required",
-      redactionStatus: "Redaction required",
-      editorialStatus: "Legal review required",
-      translationStatus: "Translation review required",
-      description:
-        "A placeholder for grouped comments that will be redacted and excerpted only where necessary.",
+      title: "Data collection",
+      detail:
+        "Open-source intelligence (OSINT) and automated scraping tools extracted exact timestamps, verbatim post text, account metadata, and follower counts.",
     },
     {
-      id: "EV-003",
-      accountLabel: "Account C",
-      date: "2025-2026",
-      type: "Narrative recurrence",
-      verificationStatus: "Methodology review required",
-      redactionStatus: "Public excerpt pending",
-      editorialStatus: "Methodology clarification required",
-      description:
-        "A future evidence card for repeated language patterns across public posts, without direct platform links.",
+      title: "Account classification",
+      detail:
+        "Each profile was assessed for stated or inferred ideological alignment (Al-Qaeda, TTP, JMB, ISIS, or unclassified) and for identity presentation (fake/pseudonymous, apparently real, or undetermined).",
+    },
+    {
+      title: "Narrative coding",
+      detail:
+        "Recurring content was grouped into four thematic pillars: international-deployment framing, hijacked mourning, domestic-unrest exploitation, and theological incitement.",
+    },
+    {
+      title: "Coordination indicators",
+      detail:
+        "Repeated hashtags, near-identical captions, and synchronised posting around specific events were treated as evidence of narrative alignment — not, by themselves, proof of formal coordination or shared control.",
+    },
+    {
+      title: "Follower-count calculation",
+      detail:
+        "Publicly visible follower counts were summed across 38 of the 61 accounts (follower data was not public on the rest), producing an aggregate of 815,000+. This is a visibility total, not unique reach or impressions.",
+    },
+    {
+      title: "Translation and review",
+      detail:
+        "Bengali-language material was translated for analysis. Sensitive or incitement-adjacent passages are held to a stricter internal review bar before any public excerpt is approved.",
+    },
+    {
+      title: "Ethical handling",
+      detail:
+        "Account identities, screenshots, and direct platform links are withheld from public release pending editorial and legal review, regardless of what is named in the source report.",
+    },
+  ],
+  recommendations: [
+    {
+      audience: "Platforms (Meta/Facebook)",
+      action: "Context-aware moderation for Bengali content",
+      detail:
+        "Human-in-the-loop review for Bengali-language posts, filters trained to catch weaponised theological terms used to incite violence, and stricter identity verification to curb mass creation of inauthentic profiles.",
+    },
+    {
+      audience: "Research community",
+      action: "Cross-platform threat tracking",
+      detail:
+        "Takedowns on one platform predictably push these networks to Telegram, X, or WhatsApp. Future OSINT work should map that migration, not just the Facebook footprint.",
+    },
+    {
+      audience: "Civil society & state communicators",
+      action: "Digital-literacy response, not passive monitoring",
+      detail:
+        "With an exposed audience of 815,000+, mostly young users, the priority is teaching people to recognise inauthentic profiles and manipulated narratives before radicalisation occurs.",
+    },
+  ],
+  limitations: [
+    {
+      title: "Sample limitations",
+      note: "61 profiles is a bounded sample, not a census of the network.",
+    },
+    {
+      title: "Deleted or unavailable content",
+      note: "Removed posts and comments cannot be independently re-verified.",
+    },
+    {
+      title: "Follower overlap",
+      note: "Aggregate follower totals may double-count shared audiences.",
+    },
+    {
+      title: "Ideological-classification uncertainty",
+      note: "Category assignment reflects researcher judgment, not confirmed affiliation.",
+    },
+    {
+      title: "Coordination versus similarity",
+      note: "Recurring language shows pattern, not proof of joint operation.",
+    },
+    {
+      title: "Translation limitations",
+      note: "Bengali-to-English rendering can shift tone and emphasis.",
     },
   ],
 };
 
-export const sectionLinks = [
+export const homeSectionLinks = [
   { id: "overview", label: "Overview" },
   { id: "triggering-event", label: "Triggering event" },
   { id: "origins", label: "Origins" },
+] as const;
+
+export const reportSectionLinks = [
   { id: "dataset", label: "Dataset" },
   { id: "narratives", label: "Narratives" },
-  { id: "evidence", label: "Evidence" },
-  { id: "methodology", label: "Methodology" },
-  { id: "limitations", label: "Limitations" },
-  { id: "recommendations", label: "Recommendations" },
+  { id: "limitations", label: "Where this stands" },
   { id: "about", label: "About" },
 ] as const;

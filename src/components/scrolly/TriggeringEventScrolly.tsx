@@ -3,36 +3,32 @@
 import { ScrollyChapter } from "@/components/scrolly/ScrollyChapter";
 import { TriggeringVisual } from "@/components/scrolly/ScrollyVisuals";
 import { EvidenceViewer } from "@/components/evidence/EvidenceViewer";
-import { evidenceRecords } from "@/data/evidence";
+import type { EvidenceRecord } from "@/types/evidence";
 
 const steps = [
   {
     eyebrow: "Stage 1 - National event",
-    title: "A public tragedy enters the record",
-    body: <p>The source report describes hostile responses following the deaths of six Bangladeshi UN peacekeepers in Abyei, Sudan. Date and supporting evidence require editorial approval before publication.</p>,
-    status: "Evidence pending" as const,
+    title: "Six peacekeepers killed in Abyei, Sudan",
+    body: <p>On December 13, 2025, a drone strike at the UN peacekeeping base in Abyei, Sudan killed six Bangladeshi peacekeepers and injured nine. State leaders and major political figures issued immediate condolences.</p>,
   },
   {
     eyebrow: "Stage 2 - Mourning space",
-    title: "Public condolence becomes a shared arena",
-    body: <p>The visual uses an abstract official-post reconstruction, not a real platform interface, account name, or screenshot.</p>,
-    status: "Editorial review required" as const,
+    title: "Condolence posts became the target",
+    body: <p>Condolence messages from Bangladesh&apos;s Prime Minister and from the Jamaat-e-Islami party page were rapidly hijacked by extremist-linked accounts. The visual here is an abstract reconstruction — not the real platform interface, account name, or screenshot.</p>,
   },
   {
     eyebrow: "Stage 3 - Narrative intrusion",
-    title: "Hostile markers enter the comment space",
-    body: <p>Warning-marked blocks represent reviewed term categories only. Full violent rhetoric is not reproduced here.</p>,
-    status: "Legal review required" as const,
+    title: "The dead were branded 'murtad'",
+    body: <p>Comments reframed the fallen soldiers as apostates dying in service of an oppressive (&quot;taghut&quot;) state, denying them any martyrdom status. Full text of the hostile comments is withheld here; only the reviewed term category is shown.</p>,
   },
   {
     eyebrow: "Stage 4 - Measured observation",
-    title: "A specific post, not all public reaction",
-    body: <p>The report states that 97 comments were examined and at least 28 explicitly used the specified term. This remains under editorial-review status until supporting evidence is approved.</p>,
-    status: "Methodology clarification required" as const,
+    title: "28 of 97 comments, on one post",
+    body: <p>The source report states that of 97 comments examined on the Jamaat-e-Islami condolence post, at least 28 explicitly used the term &quot;murtad.&quot; This measurement applies to that one comment thread — not to all public reaction to the strike.</p>,
   },
 ];
 
-export function TriggeringEventScrolly() {
+export function TriggeringEventScrolly({ evidenceRecords }: { evidenceRecords: EvidenceRecord[] }) {
   return (
     <>
       <ScrollyChapter

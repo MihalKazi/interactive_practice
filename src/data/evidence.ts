@@ -11,9 +11,8 @@ const base = {
   redactionStatus: "redaction-review-required",
   archiveStatus: "archive-review-required",
   publicationApproved: false,
-  publicCaption: "Evidence available to the reporting team; public derivative pending review.",
-  methodologyNote:
-    "Public presentation requires figure matching, redaction, caption review, source-context confirmation, and legal/editorial approval.",
+  publicCaption: "Image not yet published.",
+  methodologyNote: "",
 } as const;
 
 export const evidenceRecords: EvidenceRecord[] = [

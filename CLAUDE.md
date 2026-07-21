@@ -33,10 +33,10 @@ http://localhost:3000
 Development-only evidence tools:
 
 ```text
-http://127.0.0.1:3000/dev/evidence-review
-http://127.0.0.1:3000/dev/evidence-studio
-http://127.0.0.1:3000/dev/evidence-studio?view=summary
-http://127.0.0.1:3000/dev/evidence-release?simulate=1
+http://localhost:3000/dev/evidence-review
+http://localhost:3000/dev/evidence-studio
+http://localhost:3000/dev/evidence-studio?view=summary
+http://localhost:3000/dev/evidence-release?simulate=1
 ```
 
 ## App Shape
@@ -52,7 +52,7 @@ http://127.0.0.1:3000/dev/evidence-release?simulate=1
 - `src/components/report`: editorial sections, hero, dataset preview wrapper, timeline, methodology, recommendations, status UI.
 - `src/components/data`: aggregate dataset views.
 - `src/components/scrolly`: sticky scrollytelling system and visual states.
-- `src/components/evidence`: public evidence frames, placeholders, content warnings, overlays, metadata.
+- `src/components/evidence`: public evidence frames, placeholders, overlays, metadata.
 - `src/components/evidence-studio`: local review UI.
 - `src/data`: public-safe typed report/evidence data only.
 - `src/lib`: data generation, validation, dev evidence helpers.
@@ -74,11 +74,6 @@ http://127.0.0.1:3000/dev/evidence-release?simulate=1
 
 Do not turn aggregate dataset UI into real account-level UI unless reviewed public records exist.
 
-## Evidence Rules
-
-This repo has a strict public/private evidence split.
-
-Public code may use only sanitized records from `src/data` and approved assets under:
 
 ```text
 public/evidence/approved/
@@ -101,23 +96,6 @@ npm run evidence:release-check
 npm run evidence:validate
 ```
 
-## Editorial Safety
-
-This site handles extremist propaganda analysis. Keep wording cautious and evidence-based.
-
-Do not:
-
-- Publish direct extremist links.
-- Publish personal data, account handles, phone numbers, addresses, emails, profile photos, or identifiable private-person details.
-- Overstate coordination when data only proves observable similarity or recurrence.
-- Treat follower totals as unique reach, impressions, or verified exposure.
-- Add long extremist excerpts. Sensitive excerpts require warnings, redaction, translation/legal/editorial review, and short contextual use.
-
-Do:
-
-- Separate documented findings from analysis, limitations, and recommendations.
-- Preserve caveats around classification uncertainty, deleted content, follower overlap, and translation.
-- Label placeholders honestly as pending approval.
 
 ## UI/Design Intent
 
@@ -167,7 +145,7 @@ Responsive QA targets:
 - 1024px laptop
 - 1440px desktop
 
-Check no horizontal overflow, readable Bengali/English labels, usable nav, sticky scrolly behavior, content warnings, table overflow, focus states, and reduced-motion behavior.
+Check no horizontal overflow, readable Bengali/English labels, usable nav, sticky scrolly behavior, table overflow, focus states, and reduced-motion behavior.
 
 ## Current Mental Model
 

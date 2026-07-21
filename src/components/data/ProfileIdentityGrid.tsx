@@ -3,8 +3,7 @@
 import { useMemo, useState } from "react";
 import { motion, useReducedMotion } from "framer-motion";
 import { Button } from "@/components/ui/Button";
-import { EditorialStatus } from "@/components/report/EditorialStatus";
-import { report } from "@/data/report";
+import { useReportContent } from "@/components/providers/ReportContentProvider";
 import { formatPercentage, generateIdentityGrid, TOTAL_PROFILES } from "@/lib/report-data";
 import type { IdentityType, ProfileGridCell } from "@/types/report";
 
@@ -23,7 +22,8 @@ function classForType(type: IdentityType) {
 }
 
 export function ProfileIdentityGrid() {
-  const cells = useMemo(() => generateIdentityGrid(report.identityCategories), []);
+  const report = useReportContent();
+  const cells = useMemo(() => generateIdentityGrid(report.identityCategories), [report.identityCategories]);
   const [filter, setFilter] = useState<IdentityType | "all">("all");
   const [selected, setSelected] = useState<ProfileGridCell>(cells[0]);
   const reduceMotion = useReducedMotion();
@@ -84,8 +84,7 @@ export function ProfileIdentityGrid() {
             initial={false}
             animate={reduceMotion ? {} : { opacity: 1 }}
           >
-            <EditorialStatus status="Methodology clarification required" />
-            <h4 className="mt-4 text-2xl font-semibold">{selected.displayLabel}</h4>
+            <h4 className="text-2xl font-semibold">{selected.displayLabel}</h4>
             <p className="mt-3 text-sm"><strong>Classification:</strong> {selectedCategory.label}</p>
             <p className="mt-3 text-sm leading-7 text-[var(--muted)]">{selectedCategory.description}</p>
             <p className="mt-3 text-sm leading-7 text-[var(--muted)]">
@@ -110,11 +109,9 @@ export function ProfileIdentityGrid() {
           </div>
 
           <div className="border border-[var(--border)] p-5">
-            <EditorialStatus status="Methodology clarification required" />
-            <p className="mt-4 text-sm leading-7 text-[var(--muted)]">
+            <p className="text-sm leading-7 text-[var(--muted)]">
               Identity classifications reflect the research team&apos;s assessment of publicly observable profile information. The interactive report does not independently verify the legal identity of account operators.
             </p>
-            <p className="mt-3 text-sm leading-7 text-[var(--muted)]">Detailed classification criteria require researcher confirmation before publication.</p>
           </div>
         </div>
       </div>

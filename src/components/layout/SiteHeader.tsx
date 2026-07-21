@@ -1,15 +1,21 @@
 "use client";
 
 import { BookOpen } from "lucide-react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { MobileNavigation } from "@/components/layout/MobileNavigation";
 import { ReadingProgress } from "@/components/layout/ReadingProgress";
 import { SectionNavigation } from "@/components/layout/SectionNavigation";
 import { ThemeToggle } from "@/components/layout/ThemeToggle";
+import { homeSectionLinks, reportSectionLinks } from "@/data/report";
 import { cn } from "@/lib/utils";
 
 export function SiteHeader() {
   const [scrolled, setScrolled] = useState(false);
+  const pathname = usePathname();
+  const onReport = pathname?.startsWith("/report") ?? false;
+  const links = onReport ? reportSectionLinks : homeSectionLinks;
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 24);
@@ -31,23 +37,34 @@ export function SiteHeader() {
           <a href="#main" className="sr-only focus:not-sr-only focus:absolute focus:left-5 focus:top-20 focus:z-50 focus:bg-[var(--foreground)] focus:px-4 focus:py-2 focus:text-[var(--background)]">
             Skip to content
           </a>
-          <a href="#" className="max-w-44 font-serif text-base font-semibold leading-tight sm:max-w-none">
+          <Link href="/" className="max-w-44 font-serif text-base font-semibold leading-tight sm:max-w-none">
             Inside the Network
-          </a>
+          </Link>
           <div className="ml-auto">
-            <SectionNavigation />
+            <SectionNavigation links={links} />
           </div>
           <div className="hidden items-center gap-2 md:flex">
+            {onReport ? null : (
+              <Link
+                className="inline-flex min-h-11 items-center border border-[var(--border)] bg-[var(--surface)] px-3 text-sm font-semibold"
+                href="/report"
+              >
+                Full report
+              </Link>
+            )}
             <button className="min-h-11 border border-[var(--border)] bg-[var(--surface)] px-3 text-sm font-semibold" type="button" aria-label="Language switch placeholder">
               EN / বাংলা
             </button>
             <ThemeToggle />
-            <a className="inline-flex min-h-11 items-center gap-2 border border-[var(--foreground)] bg-[var(--foreground)] px-3 text-sm font-semibold text-[var(--background)]" href="#methodology">
+            <a
+              className="inline-flex min-h-11 items-center gap-2 border border-[var(--foreground)] bg-[var(--foreground)] px-3 text-sm font-semibold text-[var(--background)]"
+              href={onReport ? "#methodology" : "/report#methodology"}
+            >
               <BookOpen className="size-4" aria-hidden="true" />
               Methodology
             </a>
           </div>
-          <MobileNavigation />
+          <MobileNavigation links={links} onReport={onReport} />
         </div>
       </header>
     </>

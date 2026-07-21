@@ -46,3 +46,4 @@ public/evidence/generated-temp/
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+content/
