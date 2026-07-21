@@ -1,0 +1,41 @@
+{
+  "name": "tech-and-hate",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "evidence:extract": "node scripts/extract-docx-evidence.mjs",
+    "evidence:build": "node scripts/build-public-evidence.mjs",
+    "evidence:validate": "node scripts/validate-evidence.mjs",
+    "evidence:preview": "node scripts/evidence-preview.mjs",
+    "evidence:review-validate": "node scripts/evidence-review-validate.mjs",
+    "evidence:review-summary": "node scripts/evidence-review-summary.mjs",
+    "evidence:release-check": "node scripts/evidence-release-check.mjs",
+    "evidence:release-summary": "node scripts/evidence-release-summary.mjs",
+    "evidence:release-simulate": "node scripts/evidence-release-simulate.mjs",
+    "start": "next start",
+    "lint": "eslint",
+    "type-check": "tsc --noEmit"
+  },
+  "dependencies": {
+    "clsx": "^2.1.1",
+    "framer-motion": "^12.42.2",
+    "lucide-react": "^1.24.0",
+    "next": "16.2.10",
+    "react": "19.2.4",
+    "react-dom": "19.2.4",
+    "recharts": "^3.9.2",
+    "tailwind-merge": "^3.6.0"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4",
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "eslint": "^9",
+    "eslint-config-next": "16.2.10",
+    "tailwindcss": "^4",
+    "typescript": "^5"
+  }
+}
