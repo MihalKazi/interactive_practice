@@ -5,11 +5,6 @@ export function EvidenceMetadata({ record }: { record: EvidenceRecord }) {
     ["Source type", record.sourceType],
     ["Page", record.sourceDocumentPage],
     ["Language", record.language],
-    ["Verification", record.verificationStatus],
-    ["Redaction", record.redactionStatus],
-    ["Translation", record.translationStatus],
-    ["Legal", record.legalStatus],
-    ["Archive", record.archiveStatus],
   ];
   return (
     <dl className="grid gap-3 border-y border-[var(--border)] py-4 text-sm sm:grid-cols-2">

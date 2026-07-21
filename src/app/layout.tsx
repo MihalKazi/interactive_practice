@@ -1,6 +1,8 @@
 import type { Metadata, Viewport } from "next";
 import { Noto_Sans_Bengali, Noto_Serif_Bengali } from "next/font/google";
 import Script from "next/script";
+import { ReportContentProvider } from "@/components/providers/ReportContentProvider";
+import { getReportContent } from "@/lib/report-content-store";
 import "./globals.css";
 
 const sans = Noto_Sans_Bengali({
@@ -44,14 +46,17 @@ export const viewport: Viewport = {
   themeColor: "#f6f1e8",
 };
 
+export const dynamic = "force-dynamic";
+
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
+  const reportContent = getReportContent();
   return (
     <html lang="en" className={`${sans.variable} ${serif.variable} scroll-smooth`} suppressHydrationWarning>
-      <Script id="theme-init" strategy="beforeInteractive">
-        {"try{var t=localStorage.getItem('theme');if(!t)t=matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';document.documentElement.dataset.theme=t}catch(e){}"}
-      </Script>
       <body suppressHydrationWarning>
-        {children}
+        <Script id="theme-init" strategy="beforeInteractive">
+          {"try{var t=localStorage.getItem('theme');if(!t)t=matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';document.documentElement.dataset.theme=t}catch(e){}"}
+        </Script>
+        <ReportContentProvider value={reportContent}>{children}</ReportContentProvider>
       </body>
     </html>
   );

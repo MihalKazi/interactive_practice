@@ -1,14 +1,12 @@
+import { ImageOff } from "lucide-react";
 import type { EvidenceRecord } from "@/types/evidence";
 
-export function EvidenceReviewPlaceholder({ record, reason }: { record: EvidenceRecord; reason?: string }) {
+export function EvidenceReviewPlaceholder({ record }: { record: EvidenceRecord }) {
   return (
-    <div className="evidence-placeholder" role="img" aria-label={`${record.id} evidence image withheld pending review`}>
-      <p className="font-mono text-xs uppercase tracking-[0.12em] text-[var(--accent)]">{record.id} / Figure {String(record.figureNumber).padStart(3, "0")}</p>
-      <p className="mt-2 font-mono text-xs uppercase tracking-[0.12em] text-[var(--muted)]">Source-document page: {record.sourceDocumentPage}</p>
-      <p className="mt-4 text-xl font-semibold">{record.title}</p>
-      <p className="mt-3 text-sm leading-7 text-[var(--muted)]">{record.summary}</p>
-      <p className="mt-4 text-sm text-[var(--muted)]">Status: {record.editorialStatus}</p>
-      <p className="mt-3 text-sm font-semibold">{reason ?? "Evidence image withheld pending figure matching, redaction, editorial, privacy, legal, translation, and publication review."}</p>
+    <div className="evidence-placeholder" role="img" aria-label={`${record.id} image not yet added`}>
+      <ImageOff className="h-8 w-8 text-[var(--muted)]" aria-hidden="true" strokeWidth={1.5} />
+      <span className="evidence-placeholder__badge evidence-status-pill evidence-status-pill--pending">Pending review</span>
+      <p className="mt-3 max-w-sm text-sm leading-7 text-[var(--muted)]">{record.summary}</p>
     </div>
   );
 }

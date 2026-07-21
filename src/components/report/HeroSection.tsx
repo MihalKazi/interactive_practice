@@ -3,7 +3,7 @@
 import { motion, type Transition, useReducedMotion } from "framer-motion";
 import { Button } from "@/components/ui/Button";
 import { Container } from "@/components/ui/Container";
-import { report } from "@/data/report";
+import { useReportContent } from "@/components/providers/ReportContentProvider";
 
 const fadeUp = {
   hidden: { opacity: 0, y: 18 },
@@ -11,6 +11,7 @@ const fadeUp = {
 };
 
 export function HeroSection() {
+  const report = useReportContent();
   const reduceMotion = useReducedMotion();
   const transition: Transition = {
     duration: reduceMotion ? 0 : 0.75,
@@ -52,7 +53,7 @@ export function HeroSection() {
             animate="visible"
             transition={{ ...transition, delay: reduceMotion ? 0 : 0.16 }}
           >
-            How extremist narratives targeted Bangladesh&apos;s Armed Forces across public social media spaces.
+            {report.heroTagline}
           </motion.p>
           <motion.p
             className="editorial-copy mt-6"

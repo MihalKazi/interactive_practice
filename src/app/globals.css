@@ -287,12 +287,37 @@ a {
 }
 
 .marker-dot {
-  display: block;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
   aspect-ratio: 1;
   min-height: 1.4rem;
+  border-radius: 2px;
   border: 1px solid color-mix(in srgb, var(--foreground) 20%, transparent);
   background: var(--border-subtle);
-  transition: opacity 180ms ease, transform 180ms ease, border-color 180ms ease;
+  box-shadow: 0 1px 2px color-mix(in srgb, var(--foreground) 6%, transparent);
+  cursor: pointer;
+  padding: 0;
+  color: color-mix(in srgb, var(--foreground) 55%, transparent);
+  transition: opacity 180ms ease, transform 180ms ease, border-color 180ms ease, box-shadow 180ms ease;
+}
+
+.marker-dot-icon {
+  width: 62%;
+  height: 62%;
+  stroke-width: 2.25;
+}
+
+.marker-dot:hover,
+.marker-dot:focus-visible {
+  border-color: var(--foreground);
+  transform: translateY(-1px);
+}
+
+.marker-dot:focus-visible {
+  outline: 2px solid var(--selection-ring);
+  outline-offset: 2px;
 }
 
 .marker-dot.fake {
@@ -312,6 +337,265 @@ a {
 .marker-dot.emph {
   border-color: var(--foreground);
   transform: translateY(-1px);
+  box-shadow: 0 2px 5px color-mix(in srgb, var(--foreground) 16%, transparent);
+}
+
+.marker-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem 0.6rem;
+  margin-top: 1rem;
+  padding-top: 0.9rem;
+  border-top: 1px dashed var(--border);
+  font-size: 0.75rem;
+  color: var(--muted);
+}
+
+.marker-legend li {
+  display: flex;
+  align-items: center;
+}
+
+.marker-legend-button {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  padding: 0.25rem 0.5rem;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+  transition: border-color 160ms ease, background 160ms ease, color 160ms ease;
+}
+
+.marker-legend-button:hover,
+.marker-legend-button:focus-visible {
+  border-color: var(--border);
+}
+
+.marker-legend-button[aria-pressed="true"] {
+  border-color: var(--foreground);
+  background: var(--foreground);
+  color: var(--background);
+}
+
+.marker-legend-button[aria-pressed="true"] .marker-legend-swatch {
+  border-color: var(--background);
+}
+
+.marker-legend-clear {
+  color: var(--accent);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.reframe-thread {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+
+.thread-comment {
+  position: relative;
+  display: flex;
+  gap: 0.75rem;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 1.1rem 1rem 0.85rem;
+  background: color-mix(in srgb, var(--surface) 60%, transparent);
+  box-shadow: 0 2px 6px color-mix(in srgb, var(--foreground) 6%, transparent);
+}
+
+.thread-badge {
+  position: absolute;
+  top: -0.55rem;
+  left: 0.85rem;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 0.1rem 0.6rem;
+  background: var(--background);
+  font-size: 0.65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--muted);
+}
+
+.thread-badge.flagged {
+  border-color: var(--warning);
+  color: var(--warning);
+}
+
+.thread-name {
+  font-size: 0.8rem;
+  font-weight: 700;
+  margin-bottom: 0.35rem;
+}
+
+.thread-time {
+  font-weight: 400;
+  color: var(--muted);
+}
+
+.thread-footer {
+  display: flex;
+  gap: 1rem;
+  margin-top: 0.65rem;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--muted);
+}
+
+.thread-reply {
+  margin-left: 1.75rem;
+  border-color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 10%, transparent);
+  position: relative;
+}
+
+.thread-reply::before {
+  content: "";
+  position: absolute;
+  left: -1.1rem;
+  top: -0.6rem;
+  width: 1rem;
+  height: 1.4rem;
+  border-left: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  border-bottom-left-radius: 6px;
+}
+
+.thread-reply.flagged {
+  border-color: var(--warning);
+  background: color-mix(in srgb, var(--warning) 12%, transparent);
+}
+
+.thread-avatar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  background: var(--border);
+  color: color-mix(in srgb, var(--foreground) 55%, transparent);
+}
+
+.thread-avatar-icon {
+  width: 62%;
+  height: 62%;
+  stroke-width: 2.25;
+}
+
+.thread-avatar.reply {
+  background: color-mix(in srgb, var(--accent) 45%, var(--border));
+}
+
+.thread-reply.flagged .thread-avatar.reply {
+  background: color-mix(in srgb, var(--warning) 45%, var(--border));
+}
+
+.thread-body {
+  flex: 1;
+  min-width: 0;
+}
+
+.thread-text {
+  font-size: 0.9rem;
+  line-height: 1.6;
+}
+
+.glossary-chip {
+  display: inline-block;
+  border: 1px solid var(--warning);
+  border-radius: 3px;
+  padding: 0 0.35rem;
+  margin: 0 0.1rem;
+  background: color-mix(in srgb, var(--warning) 16%, transparent);
+  font: inherit;
+  font-weight: 700;
+  font-style: italic;
+  color: inherit;
+  cursor: pointer;
+}
+
+.glossary-chip[aria-pressed="true"] {
+  background: var(--warning);
+  color: var(--background);
+}
+
+.glossary-popover {
+  margin-top: 0.6rem;
+  border: 1px solid var(--warning);
+  padding: 0.65rem 0.8rem;
+  background: color-mix(in srgb, var(--warning) 10%, transparent);
+  font-size: 0.82rem;
+  line-height: 1.55;
+}
+
+.glossary-popover-term {
+  font-weight: 700;
+  font-style: italic;
+  text-transform: capitalize;
+  margin-bottom: 0.2rem;
+}
+
+.reframe-why-toggle {
+  margin-top: 0.75rem;
+  border: 0;
+  background: none;
+  padding: 0;
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  color: inherit;
+  cursor: pointer;
+}
+
+.reframe-why-note {
+  margin-top: 0.6rem;
+  padding-top: 0.6rem;
+  border-top: 1px dashed currentColor;
+  font-size: 0.82rem;
+  line-height: 1.55;
+  opacity: 0.85;
+}
+
+.marker-legend-swatch {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.1rem;
+  height: 1.1rem;
+  border-radius: 2px;
+  border: 1px solid color-mix(in srgb, var(--foreground) 20%, transparent);
+  color: color-mix(in srgb, var(--foreground) 55%, transparent);
+}
+
+.marker-legend-icon {
+  width: 68%;
+  height: 68%;
+  stroke-width: 2.25;
+}
+
+.marker-legend-swatch.fake {
+  background: var(--identity-inauthentic);
+  background-image: repeating-linear-gradient(135deg, color-mix(in srgb, var(--foreground) 18%, transparent) 0 2px, transparent 2px 5px);
+}
+
+.marker-legend-swatch.apparent {
+  background: var(--identity-apparent);
+}
+
+.marker-legend-swatch.unknown {
+  background: var(--identity-undetermined);
+  border-radius: 50%;
 }
 
 .timeline-visual {
@@ -353,13 +637,57 @@ a {
   display: flex;
   min-height: 100%;
   flex-direction: column;
+  align-items: center;
   justify-content: center;
   padding: 2rem;
+  text-align: center;
   border: 1px dashed var(--border);
   background:
     linear-gradient(90deg, color-mix(in srgb, var(--border-subtle) 55%, transparent) 1px, transparent 1px),
     var(--background);
   background-size: 22px 22px;
+}
+
+.evidence-placeholder__badge {
+  margin-top: 0.75rem;
+}
+
+.evidence-status-pill {
+  padding: 0.2rem 0.6rem;
+  border-radius: 999px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.evidence-status-pill--pending {
+  color: #b8860b;
+  background: color-mix(in srgb, #b8860b 14%, transparent);
+  border: 1px solid color-mix(in srgb, #b8860b 35%, transparent);
+}
+
+.evidence-status-pill--live {
+  color: #2f9e44;
+  background: color-mix(in srgb, #2f9e44 14%, transparent);
+  border: 1px solid color-mix(in srgb, #2f9e44 35%, transparent);
+}
+
+.evidence-frame {
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+.evidence-frame:hover,
+.evidence-frame:focus-within {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--accent) 35%, transparent);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .evidence-frame {
+    transition: none;
+  }
 }
 
 .studio-shell {
@@ -501,6 +829,15 @@ a {
   margin-top: 0.4rem;
   font-size: clamp(1.4rem, 2vw, 2.1rem);
   line-height: 1.2;
+}
+
+.studio-simple-toggle {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  white-space: nowrap;
+  font-size: 0.8rem;
+  color: #c8c0b4;
 }
 
 .studio-pub-state {
@@ -808,4 +1145,219 @@ a {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
   }
+}
+
+.admin-shell {
+  max-width: 56rem;
+  margin-inline: auto;
+  padding: 2rem 1.25rem 4rem;
+}
+
+.admin-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 1.25rem;
+}
+
+.admin-header h1 {
+  font-size: 1.6rem;
+  font-weight: 700;
+  margin-top: 0.25rem;
+}
+
+.admin-eyebrow {
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+.admin-header a {
+  border: 1px solid var(--border);
+  padding: 0.5rem 0.9rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.admin-tabs {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 1.5rem;
+}
+
+.admin-tabs button {
+  border: 1px solid var(--border);
+  padding: 0.5rem 1rem;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.admin-tabs button[aria-pressed="true"] {
+  background: var(--foreground);
+  color: var(--background);
+  border-color: var(--foreground);
+}
+
+.admin-panel-body {
+  margin-top: 1.75rem;
+}
+
+.admin-section {
+  border-top: 1px solid var(--border);
+  padding-block: 1.5rem;
+}
+
+.admin-section h2 {
+  font-size: 1.1rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+}
+
+.admin-row {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: 1fr 1fr;
+  margin-bottom: 1rem;
+}
+
+.admin-card {
+  border: 1px solid var(--border);
+  padding: 1rem;
+  margin-bottom: 1rem;
+  display: grid;
+  gap: 0.75rem;
+}
+
+.admin-card-heading {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+
+.admin-field {
+  display: grid;
+  gap: 0.35rem;
+  font-size: 0.85rem;
+}
+
+.admin-field span {
+  font-weight: 600;
+  color: var(--muted);
+}
+
+.admin-field input[type="text"],
+.admin-field input:not([type]),
+.admin-field textarea {
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--foreground);
+  padding: 0.5rem 0.6rem;
+  font: inherit;
+  width: 100%;
+}
+
+.admin-checkbox {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.admin-checkbox input {
+  width: auto;
+}
+
+.admin-action-row {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.admin-action-row button {
+  border: 1px solid var(--foreground);
+  background: var(--foreground);
+  color: var(--background);
+  padding: 0.55rem 1.1rem;
+  font-weight: 700;
+}
+
+.admin-help {
+  font-size: 0.85rem;
+  color: var(--muted);
+  line-height: 1.6;
+}
+
+.admin-evidence-preview {
+  max-width: 100%;
+  max-height: 16rem;
+  object-fit: contain;
+  border: 1px solid var(--border);
+}
+
+.admin-evidence-placeholder {
+  border: 1px dashed var(--border);
+  padding: 2rem;
+  text-align: center;
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+
+.admin-save-drawer {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  border: 1px solid var(--border);
+  background: var(--surface-elevated);
+  padding: 0.85rem 1rem;
+  margin-bottom: 1rem;
+}
+
+.admin-save-drawer strong {
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--muted);
+}
+
+.admin-save-drawer ul {
+  margin-top: 0.5rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+}
+
+.admin-save-drawer li {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  border: 1px solid var(--border);
+  padding: 0.25rem 0.6rem;
+  font-size: 0.8rem;
+  font-family: var(--font-mono, monospace);
+}
+
+.admin-status-saved,
+.admin-status-unsaved {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  padding: 0.15rem 0.5rem;
+  border-radius: 999px;
+}
+
+.admin-status-saved {
+  color: #1a7f37;
+  background: color-mix(in srgb, #1a7f37 14%, transparent);
+}
+
+.admin-status-unsaved {
+  color: #b45309;
+  background: color-mix(in srgb, #b45309 16%, transparent);
 }

@@ -1,8 +1,8 @@
 import { EvidenceViewer } from "@/components/evidence/EvidenceViewer";
-import { evidenceRecordsForCurrentEnvironment } from "@/lib/dev-public-evidence";
+import { getEvidenceRecords } from "@/lib/evidence-store";
 
 export function EvidenceSequence() {
-  const evidenceRecords = evidenceRecordsForCurrentEnvironment();
+  const evidenceRecords = getEvidenceRecords();
   return (
     <div className="mt-12 grid gap-8">
       {evidenceRecords.map((record, index) => (

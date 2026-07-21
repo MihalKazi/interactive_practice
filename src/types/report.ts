@@ -18,7 +18,6 @@ export type DatasetAnnotation = {
   id: string;
   title: string;
   body: string;
-  status?: EditorialStatus;
 };
 
 export type IdeologicalCategory = {
@@ -27,7 +26,6 @@ export type IdeologicalCategory = {
   shortLabel: string;
   value: number;
   description: string;
-  reviewStatus: EditorialStatus;
   overlapNote?: string;
 };
 
@@ -61,33 +59,27 @@ export type TimelinePoint = {
   description: string;
 };
 
-export type EvidenceItem = {
-  id: string;
-  accountLabel: string;
-  date: string;
-  type: string;
-  verificationStatus: string;
-  redactionStatus?: string;
-  editorialStatus?: string;
-  translationStatus?: string;
-  description: string;
+export type MethodologyStage = {
+  title: string;
+  detail: string;
 };
 
-export type ReviewState = "pending" | "in-review" | "approved";
+export type Recommendation = {
+  audience: string;
+  action: string;
+  detail: string;
+};
 
-export type EditorialStatus =
-  | "Documented finding"
-  | "Analysis"
-  | "Editorial review required"
-  | "Legal review required"
-  | "Evidence pending"
-  | "Translation review required"
-  | "Methodology clarification required";
+export type Limitation = {
+  title: string;
+  note: string;
+};
 
 export type ReportData = {
   title: string;
   author: string;
   date: string;
+  heroTagline: string;
   importantDataNote: string;
   openingStatistics: Statistic[];
   ideologicalClassification: ClassificationDatum[];
@@ -96,5 +88,7 @@ export type ReportData = {
   identityCategories: IdentityCategory[];
   narrativeCategories: NarrativeCategory[];
   timeline: TimelinePoint[];
-  evidencePreview: EvidenceItem[];
+  methodologyStages: MethodologyStage[];
+  recommendations: Recommendation[];
+  limitations: Limitation[];
 };

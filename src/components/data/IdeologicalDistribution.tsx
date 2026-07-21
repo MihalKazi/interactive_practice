@@ -2,9 +2,8 @@
 
 import { useMemo, useState } from "react";
 import { Bar, BarChart, Cell, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
-import { EditorialStatus } from "@/components/report/EditorialStatus";
 import { MethodologyNote } from "@/components/report/MethodologyNote";
-import { report } from "@/data/report";
+import { useReportContent } from "@/components/providers/ReportContentProvider";
 import { buildAccessibleChartSummary, formatPercentage, TOTAL_PROFILES, validateCategoryTotal } from "@/lib/report-data";
 import type { ChartViewMode, IdeologicalCategory } from "@/types/report";
 
@@ -26,6 +25,7 @@ function CustomTooltip({ active, payload }: { active?: boolean; payload?: Array<
 }
 
 export function IdeologicalDistribution() {
+  const report = useReportContent();
   const [mode, setMode] = useState<ChartViewMode>("count");
   const categories = report.ideologicalCategories;
   validateCategoryTotal(categories);
@@ -116,8 +116,7 @@ export function IdeologicalDistribution() {
               <tr className="border-b border-[var(--border)]">
                 <th scope="col" className="py-3 pr-4">Classification</th>
                 <th scope="col" className="py-3 pr-4">Profiles</th>
-                <th scope="col" className="py-3 pr-4">Percentage of sample</th>
-                <th scope="col" className="py-3">Editorial note</th>
+                <th scope="col" className="py-3">Percentage of sample</th>
               </tr>
             </thead>
             <tbody>
@@ -125,8 +124,7 @@ export function IdeologicalDistribution() {
                 <tr key={item.id} className="border-b border-[var(--border-subtle)]">
                   <th scope="row" className="py-3 pr-4 font-semibold">{item.label}</th>
                   <td className="py-3 pr-4 font-mono">{item.value}</td>
-                  <td className="py-3 pr-4 font-mono">{formatPercentage(item.value)}</td>
-                  <td className="py-3 text-[var(--muted)]"><EditorialStatus status={item.reviewStatus} /></td>
+                  <td className="py-3 font-mono">{formatPercentage(item.value)}</td>
                 </tr>
               ))}
             </tbody>
