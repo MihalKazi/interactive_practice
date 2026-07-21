@@ -1,9 +1,8 @@
-import releaseBundle from "../../private/evidence/release-state.json";
+import { releaseBundle } from "@/lib/release-bundle";
 import { evidenceRecords } from "@/data/evidence";
 import { canRenderPublicEvidence } from "@/lib/evidence-release-validation";
-import type { EvidenceReleaseBundle } from "@/types/evidence-release";
 
-const releases = releaseBundle as EvidenceReleaseBundle;
+const releases = releaseBundle;
 
 export const publicEvidenceManifest = evidenceRecords.map((record) => {
   const release = releases.items.find((item) => item.evidenceId === record.id);

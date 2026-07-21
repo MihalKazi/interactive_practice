@@ -1,10 +1,9 @@
 import { headers } from "next/headers";
 import { notFound } from "next/navigation";
-import releaseBundle from "../../../../private/evidence/release-state.json";
+import { releaseBundle } from "@/lib/release-bundle";
 import { evidenceRecords } from "@/data/evidence";
 import { EvidenceImage } from "@/components/evidence/EvidenceImage";
 import { validateReleaseEligibility } from "@/lib/evidence-release-validation";
-import type { EvidenceReleaseBundle } from "@/types/evidence-release";
 
 export const dynamic = "force-dynamic";
 
@@ -22,7 +21,7 @@ export default async function EvidenceReleasePage({
   if (process.env.NODE_ENV !== "development" || !localHost(headerList.get("host"))) notFound();
   const params = await searchParams;
   const simulate = params.simulate === "1";
-  const releases = releaseBundle as EvidenceReleaseBundle;
+  const releases = releaseBundle;
 
   return (
     <main className="min-h-screen bg-[var(--background)] px-5 py-8 text-[var(--foreground)]">
