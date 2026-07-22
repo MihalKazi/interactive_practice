@@ -33,7 +33,7 @@ export function SiteHeader() {
             Skip to content
           </a>
           <Link href="/" className="max-w-44 font-serif text-base font-semibold leading-tight sm:max-w-none">
-            Inside the Network
+            Propaganda
           </Link>
           <div className="ml-auto">
             <SectionNavigation links={sectionLinks} />

@@ -9,7 +9,7 @@ export async function SiteFooter() {
         <p>
           {report.title}. Interactive edition in development. Public-facing data must remain anonymised until editorial and legal review is complete.
         </p>
-        <p>© 2026 Hasan Al Mahmud</p>
+        <p>© 2026 Tech and Hate</p>
       </Container>
     </footer>
   );

@@ -150,38 +150,134 @@ a {
   mask-image: linear-gradient(90deg, transparent, black 16%, black 82%, transparent);
 }
 
-.hero-network {
+.hero-glow {
   position: absolute;
   inset: 0;
   pointer-events: none;
-  opacity: 0.62;
   background:
-    radial-gradient(circle at 76% 28%, color-mix(in srgb, var(--data-secondary) 20%, transparent), transparent 18rem),
-    radial-gradient(circle at 86% 70%, color-mix(in srgb, var(--accent) 14%, transparent), transparent 20rem);
+    radial-gradient(circle at 78% 30%, color-mix(in srgb, var(--data-secondary) 22%, transparent), transparent 20rem),
+    radial-gradient(circle at 88% 72%, color-mix(in srgb, var(--accent) 16%, transparent), transparent 22rem),
+    radial-gradient(circle at 8% 12%, color-mix(in srgb, var(--accent) 10%, transparent), transparent 26rem);
 }
 
-.hero-network::before,
-.hero-network::after {
-  content: "";
+.hero-node-field {
   position: absolute;
-  right: max(2rem, 8vw);
-  top: 18%;
-  width: min(42vw, 36rem);
-  aspect-ratio: 1;
-  border: 1px solid color-mix(in srgb, var(--border) 78%, transparent);
-  background-image:
-    radial-gradient(circle at 15% 20%, var(--data-secondary) 0 2px, transparent 3px),
-    radial-gradient(circle at 40% 62%, var(--data-primary) 0 2px, transparent 3px),
-    radial-gradient(circle at 72% 36%, var(--accent) 0 2px, transparent 3px),
-    linear-gradient(28deg, transparent 31%, color-mix(in srgb, var(--border) 66%, transparent) 31.3%, transparent 32%),
-    linear-gradient(112deg, transparent 43%, color-mix(in srgb, var(--border) 60%, transparent) 43.3%, transparent 44%);
+  right: max(2rem, 6vw);
+  top: 6%;
+  width: min(30vw, 24rem);
+  height: min(30vw, 24rem);
+  border: 1px solid color-mix(in srgb, var(--border) 70%, transparent);
+  border-radius: 999px;
+  z-index: 0;
 }
 
-.hero-network::after {
-  right: max(1rem, 4vw);
-  top: 42%;
-  width: min(32vw, 24rem);
-  opacity: 0.52;
+@media (max-width: 1023px) {
+  .hero-node-field {
+    opacity: 0.4;
+    width: 60vw;
+    height: 60vw;
+    right: 50%;
+    top: 4%;
+    transform: translateX(50%);
+  }
+}
+
+.hero-node {
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  rotate: 45deg;
+  outline: 1px solid currentColor;
+  outline-offset: 2px;
+  translate: -50% -50%;
+}
+
+.intro-scanlines {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.06;
+  background-image: repeating-linear-gradient(
+    180deg,
+    var(--foreground) 0,
+    var(--foreground) 1px,
+    transparent 1px,
+    transparent 3px
+  );
+}
+
+.hud-corner {
+  position: absolute;
+  width: 2.75rem;
+  height: 2.75rem;
+  pointer-events: none;
+  border-color: color-mix(in srgb, var(--accent) 55%, transparent);
+}
+
+.hud-corner-tl {
+  left: 1.25rem;
+  top: 1.25rem;
+  border-left: 1px solid;
+  border-top: 1px solid;
+}
+
+.hud-corner-tr {
+  right: 1.25rem;
+  top: 1.25rem;
+  border-right: 1px solid;
+  border-top: 1px solid;
+}
+
+.hud-corner-bl {
+  left: 1.25rem;
+  bottom: 1.25rem;
+  border-left: 1px solid;
+  border-bottom: 1px solid;
+}
+
+.hud-corner-br {
+  right: 1.25rem;
+  bottom: 1.25rem;
+  border-right: 1px solid;
+  border-bottom: 1px solid;
+}
+
+@media (min-width: 640px) {
+  .hud-corner {
+    width: 3.5rem;
+    height: 3.5rem;
+  }
+  .hud-corner-tl,
+  .hud-corner-tr {
+    top: 2rem;
+  }
+  .hud-corner-bl,
+  .hud-corner-br {
+    bottom: 2rem;
+  }
+  .hud-corner-tl,
+  .hud-corner-bl {
+    left: 2rem;
+  }
+  .hud-corner-tr,
+  .hud-corner-br {
+    right: 2rem;
+  }
+}
+
+.dossier-line {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+}
+
+.bullet-marker {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  flex-shrink: 0;
+  background: var(--accent);
+  clip-path: polygon(0 0, 70% 0, 100% 50%, 70% 100%, 0 100%);
 }
 
 .dark-chapter {
@@ -1062,8 +1158,17 @@ a {
 }
 
 .chapter-transition {
+  display: flex;
+  align-items: center;
+  min-height: 100vh;
   border-block: 1px solid var(--border);
   background: var(--background);
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
+}
+
+html {
+  scroll-snap-type: y proximity;
 }
 
 @media (min-width: 768px) {
