@@ -2,20 +2,15 @@
 
 import { BookOpen } from "lucide-react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { MobileNavigation } from "@/components/layout/MobileNavigation";
 import { ReadingProgress } from "@/components/layout/ReadingProgress";
 import { SectionNavigation } from "@/components/layout/SectionNavigation";
-import { ThemeToggle } from "@/components/layout/ThemeToggle";
-import { homeSectionLinks, reportSectionLinks } from "@/data/report";
+import { sectionLinks } from "@/data/report";
 import { cn } from "@/lib/utils";
 
 export function SiteHeader() {
   const [scrolled, setScrolled] = useState(false);
-  const pathname = usePathname();
-  const onReport = pathname?.startsWith("/report") ?? false;
-  const links = onReport ? reportSectionLinks : homeSectionLinks;
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 24);
@@ -41,32 +36,18 @@ export function SiteHeader() {
             Inside the Network
           </Link>
           <div className="ml-auto">
-            <SectionNavigation links={links} />
+            <SectionNavigation links={sectionLinks} />
           </div>
           <div className="hidden items-center gap-5 md:flex">
-            {onReport ? null : (
-              <Link
-                className="inline-flex min-h-11 items-center border border-[var(--border)] bg-[var(--surface)] px-3 text-sm font-semibold"
-                href="/report"
-              >
-                Full report
-              </Link>
-            )}
-            <div className="flex items-center gap-3">
-              <button className="min-h-11 text-sm font-semibold text-[var(--muted)] transition hover:text-[var(--accent)]" type="button" aria-label="Language switch placeholder">
-                EN / বাংলা
-              </button>
-              <ThemeToggle />
-            </div>
             <a
               className="inline-flex min-h-11 items-center gap-2 border border-[var(--foreground)] bg-[var(--foreground)] px-3 text-sm font-semibold text-[var(--background)]"
-              href={onReport ? "#methodology" : "/report#methodology"}
+              href="#methodology"
             >
               <BookOpen className="size-4" aria-hidden="true" />
               Methodology
             </a>
           </div>
-          <MobileNavigation links={links} onReport={onReport} />
+          <MobileNavigation links={sectionLinks} />
         </div>
       </header>
     </>

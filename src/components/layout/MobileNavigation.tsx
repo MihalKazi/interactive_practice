@@ -8,10 +8,8 @@ type SectionLink = { id: string; label: string };
 
 export function MobileNavigation({
   links,
-  onReport,
 }: {
   links: readonly SectionLink[];
-  onReport: boolean;
 }) {
   const [open, setOpen] = useState(false);
   const buttonRef = useRef<HTMLButtonElement>(null);
@@ -48,15 +46,6 @@ export function MobileNavigation({
         <div className="absolute inset-x-0 top-full max-h-[calc(100vh-4rem)] overflow-auto border-y border-[var(--border)] bg-[var(--background)] p-5 shadow-sm">
           <div>
             <SectionNavigation links={links} compact onNavigate={() => setOpen(false)} />
-            {onReport ? null : (
-              <a
-                href="/report"
-                onClick={() => setOpen(false)}
-                className="mt-3 block border-t border-[var(--border)] pt-3 text-sm font-semibold text-[var(--accent)]"
-              >
-                Full report →
-              </a>
-            )}
           </div>
         </div>
       ) : null}

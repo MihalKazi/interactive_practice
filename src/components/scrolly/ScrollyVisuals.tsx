@@ -1,100 +1,9 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { UserRound, UserRoundX, UserRoundSearch } from "lucide-react";
+import { UserRound, UserRoundX } from "lucide-react";
+import { CountValue } from "@/components/report/StatGrid";
 import { useReportContent } from "@/components/providers/ReportContentProvider";
-
-const markerCount = 61;
-
-type IdentityFilter = "fake" | "apparent" | "unknown";
-
-const identityIcons: Record<IdentityFilter, typeof UserRound> = {
-  fake: UserRoundX,
-  apparent: UserRound,
-  unknown: UserRoundSearch,
-};
-
-const legendItems: { id: IdentityFilter; label: string }[] = [
-  { id: "fake", label: "Fake / pseudonymous" },
-  { id: "apparent", label: "Apparently real" },
-  { id: "unknown", label: "Undetermined" },
-];
-
-const filterCounts: Record<IdentityFilter, number> = { fake: 42, apparent: 18, unknown: 1 };
-
-export function MarkerField({ step }: { step: number }) {
-  const [filter, setFilter] = useState<IdentityFilter | "all">("all");
-
-  return (
-    <div>
-      <div className="grid grid-cols-8 gap-1.5 sm:grid-cols-10">
-        {Array.from({ length: markerCount }).map((_, index) => {
-          const identity: IdentityFilter = index < 42 ? "fake" : index < 60 ? "apparent" : "unknown";
-          const visible = step === 0 ? index === 0 || index < 18 : true;
-          const emph =
-            (step === 1 && identity === "fake") ||
-            (step === 2 && index < 38) ||
-            step === 3;
-          const matchesFilter = filter === "all" || filter === identity;
-          const Icon = identityIcons[identity];
-          return (
-            <button
-              key={index}
-              type="button"
-              className={`marker-dot ${identity} ${emph ? "emph" : ""}`}
-              style={{ opacity: matchesFilter ? (visible ? 1 : 0.14) : 0.1 }}
-              aria-label={`Profile ${String(index + 1).padStart(2, "0")}, ${identity === "fake" ? "fake or pseudonymous" : identity === "apparent" ? "apparently real" : "undetermined"} identity`}
-              onClick={() => setFilter(filter === identity ? "all" : identity)}
-            >
-              <Icon className="marker-dot-icon" aria-hidden="true" />
-            </button>
-          );
-        })}
-      </div>
-      <ul className="marker-legend">
-        {legendItems.map((item) => {
-          const Icon = identityIcons[item.id];
-          return (
-            <li key={item.id}>
-              <button
-                type="button"
-                className="marker-legend-button"
-                aria-pressed={filter === item.id}
-                onClick={() => setFilter(filter === item.id ? "all" : item.id)}
-              >
-                <span className={`marker-legend-swatch ${item.id}`} aria-hidden="true">
-                  <Icon className="marker-legend-icon" aria-hidden="true" />
-                </span>
-                {item.label}
-              </button>
-            </li>
-          );
-        })}
-        {filter !== "all" ? (
-          <li>
-            <button type="button" className="marker-legend-button marker-legend-clear" onClick={() => setFilter("all")}>
-              Clear filter
-            </button>
-          </li>
-        ) : null}
-      </ul>
-      <p aria-live="polite" className="mt-2 text-xs text-[var(--muted)]">
-        {filter === "all" ? "Showing all 61 profiles." : `Highlighting ${filterCounts[filter]} of 61 profiles classified as ${legendItems.find((i) => i.id === filter)?.label.toLowerCase()}.`}
-      </p>
-      <div className="mt-6 border-t border-[var(--border)] pt-5">
-        {step === 0 ? <p className="font-mono text-4xl">n=61</p> : null}
-        {step === 1 ? <p className="font-mono text-4xl">42 of 61 / 68.9%</p> : null}
-        {step === 2 ? <p className="font-mono text-4xl">38 public follower records</p> : null}
-        {step === 3 ? (
-          <>
-            <p className="font-mono text-5xl">815,000+</p>
-            <p className="mt-3 text-sm leading-7 text-[var(--muted)]">Aggregate publicly visible follower count across 38 accounts; not unique reach, impressions, engagement, or verified exposure.</p>
-          </>
-        ) : null}
-      </div>
-    </div>
-  );
-}
 
 type ReframeSegment = { text: string } | { term: keyof typeof glossary };
 
@@ -217,7 +126,7 @@ export function TriggeringVisual({ step }: { step: number }) {
                 )}
               </p>
               {activeTerm ? (
-                <div className="glossary-popover" role="note">
+                <div className="glossary-popover" role="note" aria-live="polite">
                   <p className="glossary-popover-term">{activeTerm}</p>
                   <p>{glossary[activeTerm]}</p>
                 </div>
@@ -240,7 +149,11 @@ export function TriggeringVisual({ step }: { step: number }) {
           </div>
         ) : null}
       </div>
-      {step === 3 ? <p className="font-mono text-4xl">28 of 97</p> : null}
+      {step === 3 ? (
+        <p className="font-mono text-4xl">
+          <CountValue value="28" /> of <CountValue value="97" />
+        </p>
+      ) : null}
     </div>
   );
 }
@@ -251,7 +164,7 @@ export function TimelineVisual({ step }: { step: number }) {
     <div className="timeline-visual">
       {report.timeline.map((point, index) => (
         <div key={point.year} className={`timeline-node ${index === step ? "is-active" : ""}`}>
-          <span className="font-mono text-sm">{point.year}</span>
+          <span className="font-mono text-sm font-semibold text-(--accent)">{point.year}</span>
           <strong>{point.title}</strong>
         </div>
       ))}

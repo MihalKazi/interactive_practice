@@ -258,13 +258,9 @@ export const defaultReport: ReportData = {
   ],
 };
 
-export const homeSectionLinks = [
-  { id: "overview", label: "Overview" },
+export const sectionLinks = [
   { id: "triggering-event", label: "Triggering event" },
   { id: "origins", label: "Origins" },
-] as const;
-
-export const reportSectionLinks = [
   { id: "dataset", label: "Dataset" },
   { id: "narratives", label: "Narratives" },
   { id: "limitations", label: "Where this stands" },
