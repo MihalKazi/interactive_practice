@@ -12,9 +12,9 @@ import { TriggeringEventScrolly } from "@/components/scrolly/TriggeringEventScro
 import { getReportContent } from "@/lib/report-content-store";
 import { getEvidenceRecords } from "@/lib/evidence-store";
 
-export default function Home() {
-  const report = getReportContent();
-  const evidenceRecords = getEvidenceRecords();
+export default async function Home() {
+  const report = await getReportContent();
+  const evidenceRecords = await getEvidenceRecords();
   return (
     <>
       <SiteHeader />

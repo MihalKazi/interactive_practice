@@ -1,10 +1,11 @@
-import { releaseBundle } from "@/lib/release-bundle";
+import { getReleaseBundle } from "@/lib/release-bundle";
 import { evidenceRecords } from "@/data/evidence";
 import { canRenderPublicEvidence } from "@/lib/evidence-release-validation";
+import type { EvidenceRecord } from "@/types/evidence";
 
-const releases = releaseBundle;
-
-export const publicEvidenceManifest = evidenceRecords.map((record) => {
+export async function buildPublicEvidenceManifest() {
+  const releases = await getReleaseBundle();
+  return evidenceRecords.map((record: EvidenceRecord) => {
   const release = releases.items.find((item) => item.evidenceId === record.id);
   const renderable = canRenderPublicEvidence(record, release);
   return {
@@ -24,4 +25,5 @@ export const publicEvidenceManifest = evidenceRecords.map((record) => {
     correctionNote: release?.correctionNote ?? "",
     withdrawalState: release?.withdrawn ? "withdrawn" : "",
   };
-});
+  });
+}

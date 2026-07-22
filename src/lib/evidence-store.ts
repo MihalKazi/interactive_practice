@@ -1,34 +1,25 @@
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
-import { join } from "node:path";
+import "server-only";
+
+import { getJSON, setJSON } from "@/lib/kv-store";
 import { evidenceRecords as seedRecords } from "@/data/evidence";
 import type { EvidenceRecord } from "@/types/evidence";
 
-const CONTENT_DIR = join(process.cwd(), "content");
-const STORE_PATH = join(CONTENT_DIR, "evidence.json");
+const STORE_KEY = "evidence-records";
 
-function readStore(): EvidenceRecord[] {
-  if (!existsSync(STORE_PATH)) return seedRecords;
-  try {
-    return JSON.parse(readFileSync(STORE_PATH, "utf8")) as EvidenceRecord[];
-  } catch {
-    return seedRecords;
-  }
+async function readStore(): Promise<EvidenceRecord[]> {
+  const records = await getJSON<EvidenceRecord[]>(STORE_KEY);
+  return records ?? seedRecords;
 }
 
-function writeStore(records: EvidenceRecord[]) {
-  mkdirSync(CONTENT_DIR, { recursive: true });
-  writeFileSync(STORE_PATH, JSON.stringify(records, null, 2));
-}
-
-export function getEvidenceRecords(): EvidenceRecord[] {
+export async function getEvidenceRecords(): Promise<EvidenceRecord[]> {
   return readStore();
 }
 
-export function saveEvidenceRecord(patch: Partial<EvidenceRecord> & { id: string }): EvidenceRecord[] {
-  const records = readStore();
+export async function saveEvidenceRecord(patch: Partial<EvidenceRecord> & { id: string }): Promise<EvidenceRecord[]> {
+  const records = await readStore();
   const index = records.findIndex((item) => item.id === patch.id);
   if (index === -1) throw new Error(`Unknown evidence id: ${patch.id}`);
   records[index] = { ...records[index], ...patch };
-  writeStore(records);
+  await setJSON(STORE_KEY, records);
   return records;
 }

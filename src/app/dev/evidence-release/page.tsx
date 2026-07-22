@@ -1,27 +1,18 @@
-import { headers } from "next/headers";
-import { notFound } from "next/navigation";
-import { releaseBundle } from "@/lib/release-bundle";
+import { getReleaseBundle } from "@/lib/release-bundle";
 import { evidenceRecords } from "@/data/evidence";
 import { EvidenceImage } from "@/components/evidence/EvidenceImage";
 import { validateReleaseEligibility } from "@/lib/evidence-release-validation";
 
 export const dynamic = "force-dynamic";
 
-function localHost(hostHeader: string | null) {
-  const host = hostHeader?.split(":")[0].toLowerCase();
-  return host === "localhost" || host === "127.0.0.1" || host === "[::1]" || host === "::1";
-}
-
 export default async function EvidenceReleasePage({
   searchParams,
 }: {
   searchParams: Promise<{ simulate?: string }>;
 }) {
-  const headerList = await headers();
-  if (process.env.NODE_ENV !== "development" || !localHost(headerList.get("host"))) notFound();
   const params = await searchParams;
   const simulate = params.simulate === "1";
-  const releases = releaseBundle;
+  const releases = await getReleaseBundle();
 
   return (
     <main className="min-h-screen bg-[var(--background)] px-5 py-8 text-[var(--foreground)]">

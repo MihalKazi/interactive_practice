@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { isLocalDevelopmentRequest, readReviewBundle, writeReviewBundle } from "@/lib/dev-evidence";
+import { readReviewBundle, writeReviewBundle } from "@/lib/dev-evidence";
 import type { MatchConfidence, MatchDecision } from "@/types/evidence-review";
 
 export const dynamic = "force-dynamic";
@@ -8,7 +8,6 @@ const decisions = new Set(["pending", "confirmed", "rejected", "uncertain", "dup
 const confidence = new Set(["low", "medium", "high"]);
 
 export async function POST(request: NextRequest) {
-  if (!isLocalDevelopmentRequest(request)) return new NextResponse("Not found", { status: 404 });
   const body = await request.json();
   const allowed = ["extractionId", "matchDecision", "matchConfidence", "confirmedFigureId", "matchNotes", "reviewerInitials"];
   if (Object.keys(body).some((key) => !allowed.includes(key))) return NextResponse.json({ ok: false, error: "Unknown field" }, { status: 400 });
@@ -18,7 +17,7 @@ export async function POST(request: NextRequest) {
   if (body.matchDecision === "confirmed" && (!body.reviewerInitials || !body.matchNotes || !/^FIG-\d{3}$/.test(body.confirmedFigureId))) {
     return NextResponse.json({ ok: false, error: "Confirmation requires initials, note, and figure ID" }, { status: 400 });
   }
-  const bundle = readReviewBundle();
+  const bundle = await readReviewBundle();
   const item = bundle.items.find((entry) => entry.extractionId === body.extractionId);
   if (!item) return NextResponse.json({ ok: false, error: "Unknown extraction ID" }, { status: 404 });
   if (body.matchDecision === "confirmed") {
@@ -33,6 +32,6 @@ export async function POST(request: NextRequest) {
   item.reviewedAt = new Date().toISOString();
   item.revision += 1;
   item.updatedAt = new Date().toISOString();
-  writeReviewBundle(bundle, item.reviewerInitials, "match", ["matchDecision", "matchConfidence", "confirmedFigureId", "matchNotes"]);
+  await writeReviewBundle(bundle, item.reviewerInitials, "match", ["matchDecision", "matchConfidence", "confirmedFigureId", "matchNotes"]);
   return NextResponse.json({ ok: true, revision: item.revision });
 }

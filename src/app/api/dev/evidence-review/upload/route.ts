@@ -1,8 +1,8 @@
 import { createHash } from "node:crypto";
-import { mkdirSync, writeFileSync } from "node:fs";
-import { basename, extname, join } from "node:path";
+import { extname, basename } from "node:path";
 import { NextRequest, NextResponse } from "next/server";
-import { isLocalDevelopmentRequest, PRIVATE_EVIDENCE_DIR, readReviewBundle, readExtractionManifest, writeReviewBundle } from "@/lib/dev-evidence";
+import { readExtractionManifest, writeExtractionManifest, readReviewBundle, writeReviewBundle } from "@/lib/dev-evidence";
+import { putPrivateOriginal } from "@/lib/blob-store";
 
 export const dynamic = "force-dynamic";
 
@@ -14,7 +14,6 @@ function mimeToExt(type: string) {
 }
 
 export async function POST(request: NextRequest) {
-  if (!isLocalDevelopmentRequest(request)) return new NextResponse("Not found", { status: 404 });
   const form = await request.formData();
   const file = form.get("file");
   const expectedFigureId = String(form.get("figureId") || "");
@@ -22,16 +21,13 @@ export async function POST(request: NextRequest) {
   const ext = mimeToExt(file.type) || extname(file.name).toLowerCase();
   if (![".png", ".jpg", ".jpeg", ".webp"].includes(ext)) return NextResponse.json({ ok: false, error: "Use PNG, JPG, or WebP." }, { status: 400 });
 
-  const manifestPath = join(PRIVATE_EVIDENCE_DIR, "extraction-manifest.json");
-  const manifest = readExtractionManifest();
+  const manifest = await readExtractionManifest();
   const nextNumber = manifest.images.length + 1;
   const extractionId = `IMG-${String(nextNumber).padStart(3, "0")}`;
   const safeFigureId = /^FIG-\d{3}$/.test(expectedFigureId) ? expectedFigureId : `FIG-${String(nextNumber).padStart(3, "0")}`;
   const bytes = Buffer.from(await file.arrayBuffer());
   const extractedFilename = `${String(nextNumber).padStart(3, "0")}-uploaded${ext}`;
-  const originalsDir = join(PRIVATE_EVIDENCE_DIR, "originals");
-  mkdirSync(originalsDir, { recursive: true });
-  writeFileSync(join(originalsDir, extractedFilename), bytes);
+  await putPrivateOriginal(`originals/${extractedFilename}`, bytes, file.type || "application/octet-stream");
 
   manifest.images.push({
     extractionId,
@@ -44,13 +40,13 @@ export async function POST(request: NextRequest) {
     sha256: createHash("sha256").update(bytes).digest("hex"),
     probableFigureId: safeFigureId,
     matchingConfidence: "MATCH_REVIEW_REQUIRED",
-    matchingNotes: "Uploaded through local evidence studio. Manual figure match required.",
+    matchingNotes: "Uploaded through evidence studio. Manual figure match required.",
     extractedAt: new Date().toISOString(),
   });
   manifest.imageCount = manifest.images.length;
-  writeFileSync(manifestPath, JSON.stringify(manifest, null, 2));
+  await writeExtractionManifest(manifest);
 
-  const bundle = readReviewBundle();
+  const bundle = await readReviewBundle();
   bundle.items.push({
     extractionId,
     proposedFigureId: safeFigureId,
@@ -92,6 +88,6 @@ export async function POST(request: NextRequest) {
     revision: 0,
     updatedAt: new Date().toISOString(),
   });
-  writeReviewBundle(bundle, "studio", "upload", ["manifest", "review-state"]);
+  await writeReviewBundle(bundle, "studio", "upload", ["manifest", "review-state"]);
   return NextResponse.json({ ok: true, extractionId });
 }

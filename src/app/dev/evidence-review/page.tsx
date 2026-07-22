@@ -1,10 +1,8 @@
-import { notFound } from "next/navigation";
 import { EvidenceViewer } from "@/components/evidence/EvidenceViewer";
 import { evidenceRecords } from "@/data/evidence";
 import { getEvidenceValidationErrors } from "@/lib/evidence-validation";
 
 export default function EvidenceReviewPage() {
-  if (process.env.NODE_ENV !== "development") notFound();
   const errors = getEvidenceValidationErrors(evidenceRecords);
 
   return (
