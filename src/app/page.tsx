@@ -5,6 +5,7 @@ import { DatasetPreview } from "@/components/report/DatasetPreview";
 import { EditorialSection } from "@/components/report/EditorialSection";
 import { EvidenceSequence } from "@/components/evidence/EvidenceSequence";
 import { HeroSection } from "@/components/report/HeroSection";
+import { IntroSequence } from "@/components/report/IntroSequence";
 import { MethodologySection } from "@/components/report/MethodologySection";
 import { NarrativeSequence } from "@/components/report/NarrativeSequence";
 import { RecommendationList } from "@/components/report/RecommendationList";
@@ -22,6 +23,7 @@ export default async function Home() {
   const evidenceRecords = await getEvidenceRecords();
   return (
     <>
+      <IntroSequence />
       <SiteHeader />
       {process.env.NODE_ENV === "development" ? (
         <a
@@ -34,12 +36,17 @@ export default async function Home() {
       <main id="main" className="flex-1">
         <HeroSection />
 
-        <EditorialSection id="key-findings" className="py-10 sm:py-14">
-          <StatGrid stats={report.openingStatistics} />
-        </EditorialSection>
-
         <ChapterTransition number="01" label="Triggering event" statement="A national event becomes a contested public space." dark />
         <TriggeringEventScrolly evidenceRecords={evidenceRecords} />
+
+        <EditorialSection id="key-findings" className="py-10 sm:py-14">
+          <SectionHeading
+            eyebrow="What you just saw, by the numbers"
+            title="The scale behind the story"
+            description="Aggregate figures from the dataset used throughout this investigation."
+          />
+          <StatGrid stats={report.openingStatistics} />
+        </EditorialSection>
 
         <ChapterTransition
           number="02"
@@ -132,7 +139,7 @@ export default async function Home() {
             </div>
           </details>
 
-          <div className="mt-16 border-t border-[var(--border)] pt-6">
+          <div id="evidence-standards" className="mt-16 scroll-mt-28 border-t border-[var(--border)] pt-6">
             <p className="eyebrow text-[var(--accent)]">Evidence standards</p>
             <h3 className="mt-2 text-lg font-semibold">All evidence figures, 001–006</h3>
             <EvidenceSequence />

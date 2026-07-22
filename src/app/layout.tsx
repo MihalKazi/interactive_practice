@@ -18,24 +18,24 @@ const serif = Noto_Serif_Bengali({
 });
 
 export const metadata: Metadata = {
-  title: "Inside the Network | Interactive Investigation",
+  title: "Propaganda: An Analysis of Extremist Campaigns Targeting the Bangladesh Armed Forces",
   description:
     "An interactive data-led investigation into extremist online narratives targeting the Bangladesh Armed Forces.",
-  authors: [{ name: "Hasan Al Mahmud" }],
+  authors: [{ name: "Tech and Hate" }],
   metadataBase: new URL("https://example.com"),
   alternates: { canonical: "/" },
   openGraph: {
-    title: "Inside the Network | Interactive Investigation",
+    title: "Propaganda: An Analysis of Extremist Campaigns Targeting the Bangladesh Armed Forces",
     description:
       "An interactive data-led investigation into extremist online narratives targeting the Bangladesh Armed Forces.",
     type: "article",
     publishedTime: "2026-03-20",
-    authors: ["Hasan Al Mahmud"],
+    authors: ["Tech and Hate"],
     url: "https://example.com/",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Inside the Network | Interactive Investigation",
+    title: "Propaganda: An Analysis of Extremist Campaigns Targeting the Bangladesh Armed Forces",
     description:
       "An interactive data-led investigation into extremist online narratives targeting the Bangladesh Armed Forces.",
   },

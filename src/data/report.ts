@@ -3,7 +3,7 @@ import type { ReportData } from "@/types/report";
 export const defaultReport: ReportData = {
   title:
     "Propaganda: An Analysis of Extremist Campaigns Targeting the Bangladesh Armed Forces",
-  author: "Hasan Al Mahmud",
+  author: "Tech and Hate",
   date: "March 20, 2026",
   heroTagline:
     "How extremist narratives targeted Bangladesh's Armed Forces across public social media spaces.",
