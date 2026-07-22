@@ -10,6 +10,7 @@ import { RecommendationList } from "@/components/report/RecommendationList";
 import { SectionHeading } from "@/components/report/SectionHeading";
 import { Divider } from "@/components/ui/Divider";
 import { getReportContent } from "@/lib/report-content-store";
+import { getEvidenceRecords } from "@/lib/evidence-store";
 
 export const metadata = {
   title: "Full report — Inside the Network",
@@ -18,6 +19,7 @@ export const metadata = {
 
 export default async function ReportPage() {
   const report = await getReportContent();
+  const evidenceRecords = await getEvidenceRecords();
   return (
     <>
       <SiteHeader />
@@ -32,14 +34,14 @@ export default async function ReportPage() {
           <DatasetPreview />
         </EditorialSection>
 
-        <EditorialSection id="narratives" className="bg-[var(--surface)]">
+        <EditorialSection id="narratives-intro" className="bg-[var(--surface)] pb-0">
           <SectionHeading
             eyebrow="Four narrative categories"
             title="How the same story gets retold"
-            description="Each category traced from trigger to talking point, with evidence status shown alongside."
+            description="Each category traced from trigger to talking point, with evidence status shown alongside. Scroll to move through each one."
           />
-          <NarrativeSequence narrativeCategories={report.narrativeCategories} />
         </EditorialSection>
+        <NarrativeSequence narrativeCategories={report.narrativeCategories} evidenceRecords={evidenceRecords} />
 
         <EditorialSection id="limitations">
           <SectionHeading

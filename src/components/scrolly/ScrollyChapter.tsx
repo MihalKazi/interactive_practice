@@ -49,7 +49,7 @@ export function ScrollyChapter({
           <ScrollyProgress count={steps.length} active={active} title={title} />
           {steps.map((step, index) => (
             <div
-              key={step.title}
+              key={index}
               ref={(node) => {
                 stepRefs.current[index] = node;
               }}

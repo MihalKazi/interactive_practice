@@ -1,53 +1,76 @@
+"use client";
+
 import { FileSearch, MessageSquareText, Network, Scale } from "lucide-react";
 import { ContentWarning } from "@/components/report/ContentWarning";
-import { NarrativeVisual } from "@/components/scrolly/ScrollyVisuals";
+import { ScrollyChapter } from "@/components/scrolly/ScrollyChapter";
 import { EvidenceViewer } from "@/components/evidence/EvidenceViewer";
-import { getEvidenceRecords } from "@/lib/evidence-store";
+import type { EvidenceRecord } from "@/types/evidence";
 import type { NarrativeCategory } from "@/types/report";
 
 const icons = [Network, MessageSquareText, FileSearch, Scale];
-const narrativeEvidenceIndexes = [0, 1, 2, 3];
 
-export async function NarrativeSequence({ narrativeCategories }: { narrativeCategories: NarrativeCategory[] }) {
-  const evidenceRecords = await getEvidenceRecords();
+const evidenceIdsByCategory: Record<string, string[]> = {
+  deployments: ["EV-004"],
+  grief: ["EV-001", "EV-002"],
+  unrest: ["EV-005"],
+  theology: ["EV-006", "EV-003"],
+};
+
+export function NarrativeSequence({
+  narrativeCategories,
+  evidenceRecords,
+}: {
+  narrativeCategories: NarrativeCategory[];
+  evidenceRecords: EvidenceRecord[];
+}) {
+  const steps = narrativeCategories.map((category, index) => {
+    const Icon = icons[index];
+    return {
+      eyebrow: category.title,
+      title: (
+        <span className="flex items-center gap-3">
+          <Icon className="size-5 text-[var(--data-secondary)]" aria-hidden="true" />
+          {category.title}
+        </span>
+      ),
+      body: <p>{category.description}</p>,
+    };
+  });
+
+  const renderVisual = (active: number) => {
+    const category = narrativeCategories[active];
+    const ids = evidenceIdsByCategory[category.id] ?? [];
+    const records = ids.map((id) => evidenceRecords.find((record) => record.id === id)).filter((record): record is EvidenceRecord => Boolean(record));
+    const sensitive = active === 3;
+    const visual = (
+      <div className="space-y-6">
+        {records.map((record) => (
+          <EvidenceViewer key={record.id} record={record} step={active} />
+        ))}
+      </div>
+    );
+    return sensitive ? (
+      <ContentWarning
+        title="Sensitive rhetoric category"
+        description="This category may reference violent or inciting language. Public excerpts require redaction, context, and review."
+        severity="high"
+      >
+        {visual}
+      </ContentWarning>
+    ) : (
+      visual
+    );
+  };
+
   return (
-    <div className="mt-12 space-y-12">
-      {narrativeCategories.map((category, index) => {
-        const Icon = icons[index];
-        const body = (
-          <article className="narrative-chapter grid gap-8 border-y border-[var(--border)] py-10 lg:grid-cols-[6rem_1fr_0.9fr] lg:items-start">
-            <div className="flex items-center gap-4 md:block">
-              <p className="font-serif text-5xl text-[var(--accent)]">{String(index + 1).padStart(2, "0")}</p>
-              <Icon className="size-6 text-[var(--data-secondary)] md:mt-5" aria-hidden="true" />
-            </div>
-            <div>
-              <h3 className="text-2xl font-semibold">{category.title}</h3>
-              <p className="mt-3 max-w-2xl text-sm leading-7 text-[var(--muted)]">{category.description}</p>
-            </div>
-            <div className="space-y-3 text-sm">
-              <NarrativeVisual index={index} />
-            </div>
-            {typeof narrativeEvidenceIndexes[index] === "number" ? (
-              <div className="lg:col-span-3">
-                <EvidenceViewer record={evidenceRecords[narrativeEvidenceIndexes[index]]} />
-              </div>
-            ) : null}
-          </article>
-        );
-        return index === 3 ? (
-          <div key={category.id}>
-            <ContentWarning
-              title="Sensitive rhetoric category"
-              description="This category may reference violent or inciting language. Public excerpts require redaction, context, and review."
-              severity="high"
-            >
-              {body}
-            </ContentWarning>
-          </div>
-        ) : (
-          <div key={category.id}>{body}</div>
-        );
-      })}
-    </div>
+    <ScrollyChapter
+      id="narratives"
+      title="Four narrative categories"
+      visualTitle="Category evidence"
+      source="Evidence status shown per category"
+      caption="Evidence panel updates with each category. All six evidence figures appear across the four categories."
+      steps={steps}
+      renderVisual={renderVisual}
+    />
   );
 }

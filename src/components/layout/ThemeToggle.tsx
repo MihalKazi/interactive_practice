@@ -27,7 +27,7 @@ export function ThemeToggle() {
 
   return (
     <button
-      className="inline-flex min-h-11 min-w-11 items-center justify-center border border-[var(--border)] bg-[var(--surface)] text-[var(--foreground)] transition hover:border-[var(--accent)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--accent)]"
+      className="inline-flex min-h-11 min-w-11 items-center justify-center text-[var(--muted)] transition hover:text-[var(--accent)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--accent)]"
       type="button"
       aria-label={`Switch to ${nextTheme} theme`}
       onClick={() => {
