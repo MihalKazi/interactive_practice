@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Noto_Sans_Bengali, Noto_Serif_Bengali } from "next/font/google";
 import Script from "next/script";
+import { ScrollToTop } from "@/components/layout/ScrollToTop";
 import { ReportContentProvider } from "@/components/providers/ReportContentProvider";
 import { getReportContent } from "@/lib/report-content-store";
 import "./globals.css";
@@ -62,6 +63,7 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
           }}
         />
         <ReportContentProvider value={reportContent}>{children}</ReportContentProvider>
+        <ScrollToTop />
       </body>
     </html>
   );

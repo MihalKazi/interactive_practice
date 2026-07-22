@@ -43,7 +43,7 @@ export function SiteHeader() {
           <div className="ml-auto">
             <SectionNavigation links={links} />
           </div>
-          <div className="hidden items-center gap-2 md:flex">
+          <div className="hidden items-center gap-5 md:flex">
             {onReport ? null : (
               <Link
                 className="inline-flex min-h-11 items-center border border-[var(--border)] bg-[var(--surface)] px-3 text-sm font-semibold"
@@ -52,10 +52,12 @@ export function SiteHeader() {
                 Full report
               </Link>
             )}
-            <button className="min-h-11 border border-[var(--border)] bg-[var(--surface)] px-3 text-sm font-semibold" type="button" aria-label="Language switch placeholder">
-              EN / বাংলা
-            </button>
-            <ThemeToggle />
+            <div className="flex items-center gap-3">
+              <button className="min-h-11 text-sm font-semibold text-[var(--muted)] transition hover:text-[var(--accent)]" type="button" aria-label="Language switch placeholder">
+                EN / বাংলা
+              </button>
+              <ThemeToggle />
+            </div>
             <a
               className="inline-flex min-h-11 items-center gap-2 border border-[var(--foreground)] bg-[var(--foreground)] px-3 text-sm font-semibold text-[var(--background)]"
               href={onReport ? "#methodology" : "/report#methodology"}

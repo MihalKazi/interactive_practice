@@ -28,12 +28,12 @@ export function HeroSection() {
         transition={{ duration: 1.2 }}
       />
       <Container className="relative grid min-h-[calc(90vh-8rem)] items-center gap-12 lg:grid-cols-[minmax(0,1fr)_22rem]">
-        <div className="absolute left-5 top-0 hidden gap-2 sm:flex" aria-hidden="true">
-          {["Opening", "Dataset", "Evidence", "Method"].map((item, index) => (
-            <span key={item} className={`h-1 w-16 ${index === 0 ? "bg-[var(--accent)]" : "bg-[var(--border)]"}`} />
-          ))}
-        </div>
         <div className="max-w-5xl">
+          <div className="mb-6 hidden gap-2 sm:flex" aria-hidden="true">
+            {["Opening", "Dataset", "Evidence", "Method"].map((item, index) => (
+              <span key={item} className={`h-1 w-16 ${index === 0 ? "bg-[var(--accent)]" : "bg-[var(--border)]"}`} />
+            ))}
+          </div>
           <motion.p className="eyebrow text-[var(--accent)]" variants={fadeUp} initial="hidden" animate="visible" transition={transition}>
             Interactive Investigation
           </motion.p>
@@ -118,17 +118,17 @@ export function HeroSection() {
             </div>
           </dl>
         </motion.aside>
-
-        <motion.a
-          href="#overview"
-          className="absolute bottom-0 left-5 hidden text-xs font-semibold uppercase tracking-[0.16em] text-[var(--muted)] sm:block"
-          initial={reduceMotion ? false : { opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.8, delay: 0.8 }}
-        >
-          Scroll to investigate
-        </motion.a>
       </Container>
+
+      <motion.a
+        href="#overview"
+        className="absolute bottom-6 left-5 hidden text-xs font-semibold uppercase tracking-[0.16em] text-[var(--muted)] sm:block"
+        initial={reduceMotion ? false : { opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.8, delay: 0.8 }}
+      >
+        Scroll to investigate
+      </motion.a>
     </section>
   );
 }

@@ -21,7 +21,7 @@ export default async function Home() {
       {process.env.NODE_ENV === "development" ? (
         <a
           href="/admin"
-          className="fixed bottom-4 right-4 z-50 border border-[var(--accent)] bg-[var(--surface-elevated)] px-4 py-3 text-sm font-semibold shadow-lg focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--accent)]"
+          className="fixed bottom-4 left-4 z-50 border border-[var(--accent)] bg-[var(--surface-elevated)] px-4 py-3 text-sm font-semibold shadow-lg focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--accent)]"
         >
           Open Admin Panel
         </a>

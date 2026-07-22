@@ -1,6 +1,6 @@
 export type ScrollyStepData = {
   eyebrow?: string;
-  title: string;
+  title: React.ReactNode;
   body: React.ReactNode;
 };
 
