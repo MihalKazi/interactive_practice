@@ -1,6 +1,5 @@
 import type { Metadata, Viewport } from "next";
 import { Noto_Sans_Bengali, Noto_Serif_Bengali } from "next/font/google";
-import Script from "next/script";
 import { ScrollToTop } from "@/components/layout/ScrollToTop";
 import { ReportContentProvider } from "@/components/providers/ReportContentProvider";
 import { getReportContent } from "@/lib/report-content-store";
@@ -44,7 +43,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#f6f1e8",
+  themeColor: "#151412",
 };
 
 export const dynamic = "force-dynamic";
@@ -52,16 +51,8 @@ export const dynamic = "force-dynamic";
 export default async function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   const reportContent = await getReportContent();
   return (
-    <html lang="en" className={`${sans.variable} ${serif.variable} scroll-smooth`} suppressHydrationWarning>
-      <body suppressHydrationWarning>
-        <Script
-          id="theme-init"
-          strategy="beforeInteractive"
-          dangerouslySetInnerHTML={{
-            __html:
-              "try{var t=localStorage.getItem('theme');if(!t)t=matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';document.documentElement.dataset.theme=t}catch(e){}",
-          }}
-        />
+    <html lang="en" className={`${sans.variable} ${serif.variable} scroll-smooth`}>
+      <body>
         <ReportContentProvider value={reportContent}>{children}</ReportContentProvider>
         <ScrollToTop />
       </body>

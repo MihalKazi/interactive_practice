@@ -4,6 +4,7 @@ import { useMemo, useState } from "react";
 import { motion, useReducedMotion } from "framer-motion";
 import { UserRound, UserRoundSearch, UserRoundX } from "lucide-react";
 import { Button } from "@/components/ui/Button";
+import { CountValue } from "@/components/report/StatGrid";
 import { ScrollyChapter } from "@/components/scrolly/ScrollyChapter";
 import { useReportContent } from "@/components/providers/ReportContentProvider";
 import { formatPercentage, generateIdentityGrid, TOTAL_PROFILES } from "@/lib/report-data";
@@ -47,7 +48,7 @@ export function ProfileIdentityGrid() {
         <div>
           <p>{category.description}</p>
           <p className="mt-3 font-mono text-3xl text-[var(--foreground)]">
-            {category.value} of {TOTAL_PROFILES} / {formatPercentage(category.value)}
+            <CountValue value={String(category.value)} /> of <CountValue value={String(TOTAL_PROFILES)} /> / {formatPercentage(category.value)}
           </p>
         </div>
       ),
@@ -61,7 +62,7 @@ export function ProfileIdentityGrid() {
     const emphasis = emphasisType(active);
     return (
       <div>
-        <div className="grid grid-cols-7 gap-2 sm:grid-cols-10 md:grid-cols-12" data-profile-grid>
+        <div className="grid grid-cols-6 gap-3 sm:grid-cols-8 md:grid-cols-10" data-profile-grid>
           {cells.map((cell, index) => {
             const active_ = emphasis === "all" || emphasis === cell.identityType;
             const isSelected = selected.id === cell.id;
@@ -79,7 +80,7 @@ export function ProfileIdentityGrid() {
                 transition={{ duration: reduceMotion ? 0 : 0.22 }}
                 className={`profile-cell flex items-center justify-center ${classForType(cell.identityType)} ${identityMarks[cell.identityType]} ${isSelected ? "selected" : ""}`}
               >
-                <Icon className="size-3.5 text-[var(--foreground)]" aria-hidden="true" />
+                <Icon className="size-6 text-[var(--foreground)]" aria-hidden="true" />
                 <span className="sr-only">{cell.displayLabel}</span>
               </motion.button>
             );
@@ -134,7 +135,9 @@ export function ProfileIdentityGrid() {
                   <Icon className="size-3 text-[var(--foreground)]" aria-hidden="true" />
                 </span>
                 <span>
-                  <span className="block font-semibold">{category.label} - {category.value} ({formatPercentage(category.value)})</span>
+                  <span className="block font-semibold">
+                    {category.label} - <CountValue value={String(category.value)} /> ({formatPercentage(category.value)})
+                  </span>
                   <span className="mt-1 block text-sm leading-6 text-[var(--muted)]">{category.description}</span>
                 </span>
               </li>

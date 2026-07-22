@@ -64,31 +64,25 @@ export function HeroSection() {
           >
             A data-led examination of 61 highly active profiles, recurring propaganda narratives, inauthentic identity tactics, and the exploitation of national events.
           </motion.p>
-          <svg className="mt-8 h-28 w-full max-w-3xl text-[var(--data-secondary)]" viewBox="0 0 720 120" role="img" aria-label="Conceptual profile field without verified account links">
-            {Array.from({ length: 18 }).map((_, index) => (
-              <circle key={index} cx={30 + index * 38} cy={index % 2 ? 76 : 42} r="3" fill="currentColor" opacity={0.42 + (index % 3) * 0.16} />
-            ))}
-            <path d="M30 60 C 180 10, 340 110, 520 46 S 650 64, 690 30" fill="none" stroke="currentColor" strokeWidth="1" strokeDasharray="2 10" opacity="0.45" />
-          </svg>
-          <motion.p
-            className="mt-8 max-w-2xl border-l-2 border-[var(--warning)] bg-[color-mix(in_srgb,var(--surface)_58%,transparent)] py-3 pl-4 text-sm leading-7 text-[var(--muted)]"
-            variants={fadeUp}
-            initial="hidden"
-            animate="visible"
-            transition={{ ...transition, delay: reduceMotion ? 0 : 0.32 }}
-          >
-            This investigation references extremist rhetoric and incitement. Potentially harmful material is presented only where necessary for public-interest reporting.
-          </motion.p>
           <motion.div
             className="mt-9 flex flex-col gap-3 sm:flex-row"
             variants={fadeUp}
             initial="hidden"
             animate="visible"
-            transition={{ ...transition, delay: reduceMotion ? 0 : 0.4 }}
+            transition={{ ...transition, delay: reduceMotion ? 0 : 0.32 }}
           >
-            <Button href="#overview">Begin the investigation</Button>
+            <Button href="#key-findings">Begin the investigation</Button>
             <Button href="#methodology" variant="secondary">Explore the methodology</Button>
           </motion.div>
+          <motion.p
+            className="mt-5 max-w-2xl text-xs leading-6 text-(--muted)"
+            variants={fadeUp}
+            initial="hidden"
+            animate="visible"
+            transition={{ ...transition, delay: reduceMotion ? 0 : 0.4 }}
+          >
+            This investigation references extremist rhetoric and incitement. Potentially harmful material is presented only where necessary for public-interest reporting.
+          </motion.p>
         </div>
 
         <motion.aside

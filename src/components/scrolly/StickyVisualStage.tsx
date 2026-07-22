@@ -23,7 +23,7 @@ export function StickyVisualStage({
           Methodology
         </Button>
       </figcaption>
-      <div className="mt-5 min-h-[22rem]">{children}</div>
+      <div className="mt-5 min-h-[32rem]">{children}</div>
       <VisualCaption>{caption}</VisualCaption>
     </figure>
   );

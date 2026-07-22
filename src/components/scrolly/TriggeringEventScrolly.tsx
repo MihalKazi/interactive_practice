@@ -37,7 +37,7 @@ export function TriggeringEventScrolly({ evidenceRecords }: { evidenceRecords: E
         title="Triggering event"
         visualTitle="How public mourning was reframed"
         source="Diagrammatic reconstruction; evidence pending"
-        caption="This sequence does not show real account identities, real screenshots, or full harmful excerpts."
+        caption="The visual is a reconstruction of the public mourning space on social media, showing how extremist-linked accounts reframed the narrative around the deaths of six Bangladeshi peacekeepers in Abyei, Sudan."
         steps={steps}
         renderVisual={(active) => <TriggeringVisual step={active} />}
       />
