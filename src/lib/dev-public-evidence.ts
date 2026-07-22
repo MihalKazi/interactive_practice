@@ -1,9 +1,9 @@
 import "server-only";
 
-import { existsSync, readFileSync } from "node:fs";
-import { join } from "node:path";
 import { evidenceRecords } from "@/data/evidence";
-import { PRIVATE_EVIDENCE_DIR, readReviewBundle } from "@/lib/dev-evidence";
+import { readReviewBundle, LOCAL_PUBLICATIONS_KEY } from "@/lib/dev-evidence";
+import { getJSON } from "@/lib/kv-store";
+import type { EvidenceReviewState } from "@/types/evidence-review";
 import type { EvidenceRecord, PublicEvidenceAnnotation } from "@/types/evidence";
 
 type LocalPublication = {
@@ -22,10 +22,8 @@ const titles: Record<string, string> = {
   "FIG-006": "Sensitive rhetoric analysed as incitement",
 };
 
-function localPublications() {
-  const path = join(PRIVATE_EVIDENCE_DIR, "local-publications.json");
-  if (!existsSync(path)) return [] as LocalPublication[];
-  return JSON.parse(readFileSync(path, "utf8")) as LocalPublication[];
+async function localPublications() {
+  return (await getJSON<LocalPublication[]>(LOCAL_PUBLICATIONS_KEY)) ?? [];
 }
 
 function figureNumber(figureId: string) {
@@ -33,7 +31,7 @@ function figureNumber(figureId: string) {
   return number >= 1 && number <= 6 ? (number as EvidenceRecord["figureNumber"]) : 1;
 }
 
-function annotations(item: ReturnType<typeof readReviewBundle>["items"][number]) {
+function annotations(item: EvidenceReviewState) {
   const regions = [...item.highlightRegions, ...item.annotationRegions];
   return regions.map((region, index) => ({
     id: `${item.extractionId}-${region.id}`,
@@ -51,11 +49,9 @@ function annotations(item: ReturnType<typeof readReviewBundle>["items"][number])
   })) satisfies PublicEvidenceAnnotation[];
 }
 
-export function evidenceRecordsForCurrentEnvironment() {
-  if (process.env.NODE_ENV !== "development") return evidenceRecords;
-
-  const bundle = readReviewBundle();
-  const published = localPublications();
+export async function evidenceRecordsForCurrentEnvironment() {
+  const bundle = await readReviewBundle();
+  const published = await localPublications();
   if (published.length === 0) return evidenceRecords;
 
   const next = [...evidenceRecords];

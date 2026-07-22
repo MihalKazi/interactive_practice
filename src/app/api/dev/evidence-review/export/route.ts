@@ -1,16 +1,16 @@
-import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
-import { join } from "node:path";
 import { NextRequest, NextResponse } from "next/server";
-import { isLocalDevelopmentRequest, PRIVATE_EVIDENCE_DIR, PUBLICATION_CONFIG_PATH, readReviewBundle, writeReviewBundle } from "@/lib/dev-evidence";
+import { readReviewBundle, writeReviewBundle, PUBLICATION_CONFIG_KEY, LAST_EXPORT_KEY } from "@/lib/dev-evidence";
+import { getJSON, setJSON } from "@/lib/kv-store";
 
 export const dynamic = "force-dynamic";
 
+type PublicationConfig = { items: unknown[] };
+
 export async function POST(request: NextRequest) {
-  if (!isLocalDevelopmentRequest(request)) return new NextResponse("Not found", { status: 404 });
   const body = await request.json().catch(() => ({}));
-  const bundle = readReviewBundle();
-  writeReviewBundle(bundle, String(body.reviewerInitials || "studio"), "export", ["publication-config"]);
-  const existing = JSON.parse(readFileSync(PUBLICATION_CONFIG_PATH, "utf8"));
+  const bundle = await readReviewBundle();
+  await writeReviewBundle(bundle, String(body.reviewerInitials || "studio"), "export", ["publication-config"]);
+  const existing = (await getJSON<PublicationConfig>(PUBLICATION_CONFIG_KEY)) ?? { items: [] };
   existing.items = bundle.items.map((item) => ({
     evidenceId: item.proposedFigureId.replace("FIG", "EV"),
     sourceFilename: "",
@@ -26,8 +26,7 @@ export async function POST(request: NextRequest) {
     outputQuality: 82,
     allowPublication: false,
   }));
-  mkdirSync(PRIVATE_EVIDENCE_DIR, { recursive: true });
-  writeFileSync(PUBLICATION_CONFIG_PATH, JSON.stringify(existing, null, 2));
-  writeFileSync(join(PRIVATE_EVIDENCE_DIR, "last-export.json"), JSON.stringify({ exportedAt: new Date().toISOString(), itemCount: bundle.items.length }, null, 2));
+  await setJSON(PUBLICATION_CONFIG_KEY, existing);
+  await setJSON(LAST_EXPORT_KEY, { exportedAt: new Date().toISOString(), itemCount: bundle.items.length });
   return NextResponse.json({ ok: true, itemCount: bundle.items.length });
 }

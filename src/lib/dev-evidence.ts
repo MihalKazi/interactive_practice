@@ -1,14 +1,13 @@
 import "server-only";
 
-import { existsSync, mkdirSync, readFileSync, writeFileSync, copyFileSync, appendFileSync } from "node:fs";
-import { basename, join, resolve } from "node:path";
-import type { NextRequest } from "next/server";
+import { getJSON, setJSON, appendHistory } from "@/lib/kv-store";
 import type { EvidenceReviewBundle, EvidenceReviewState, ReviewRegion } from "@/types/evidence-review";
 
-export const PRIVATE_EVIDENCE_DIR = resolve(process.cwd(), "private", "evidence");
-export const REVIEW_STATE_PATH = join(PRIVATE_EVIDENCE_DIR, "review-state.json");
-export const PUBLICATION_CONFIG_PATH = join(PRIVATE_EVIDENCE_DIR, "publication-config.json");
-export const HISTORY_PATH = join(PRIVATE_EVIDENCE_DIR, "review-history.jsonl");
+const MANIFEST_KEY = "extraction-manifest";
+const REVIEW_STATE_KEY = "review-state";
+export const PUBLICATION_CONFIG_KEY = "publication-config";
+export const LOCAL_PUBLICATIONS_KEY = "local-publications";
+export const LAST_EXPORT_KEY = "last-export";
 
 type ExtractionRecord = {
   extractionId: string;
@@ -24,6 +23,8 @@ type ExtractionRecord = {
   matchingNotes?: string;
   extractedAt?: string;
 };
+
+type ExtractionManifest = { imageCount: number; images: ExtractionRecord[] };
 
 const expected: Record<string, { page: string; content: string; caption: string }> = {
   "FIG-001": {
@@ -58,27 +59,13 @@ const expected: Record<string, { page: string; content: string; caption: string 
   },
 };
 
-export function isLocalDevelopmentRequest(request: NextRequest) {
-  if (process.env.NODE_ENV !== "development") return false;
-  const host = request.headers.get("host")?.split(":")[0].toLowerCase();
-  return host === "localhost" || host === "127.0.0.1" || host === "[::1]" || host === "::1";
+export async function readExtractionManifest(): Promise<ExtractionManifest> {
+  const manifest = await getJSON<ExtractionManifest>(MANIFEST_KEY);
+  return manifest ?? { imageCount: 0, images: [] };
 }
 
-export function readExtractionManifest() {
-  const path = join(PRIVATE_EVIDENCE_DIR, "extraction-manifest.json");
-  if (!existsSync(path)) return { imageCount: 0, images: [] as ExtractionRecord[] };
-  return JSON.parse(readFileSync(path, "utf8")) as { imageCount: number; images: ExtractionRecord[] };
-}
-
-function isoStamp() {
-  return new Date().toISOString().replace(/[:.]/g, "").replace("T", "T").replace("Z", "Z");
-}
-
-function backup(path: string, prefix: string) {
-  if (!existsSync(path)) return;
-  const backupDir = join(PRIVATE_EVIDENCE_DIR, "backups");
-  mkdirSync(backupDir, { recursive: true });
-  copyFileSync(path, join(backupDir, `${prefix}-${isoStamp()}.json`));
+export async function writeExtractionManifest(manifest: ExtractionManifest) {
+  await setJSON(MANIFEST_KEY, manifest);
 }
 
 function defaultState(record: ExtractionRecord, index: number): EvidenceReviewState {
@@ -127,46 +114,40 @@ function defaultState(record: ExtractionRecord, index: number): EvidenceReviewSt
   };
 }
 
-export function readReviewBundle(): EvidenceReviewBundle {
-  if (existsSync(REVIEW_STATE_PATH)) return JSON.parse(readFileSync(REVIEW_STATE_PATH, "utf8")) as EvidenceReviewBundle;
-  const manifest = readExtractionManifest();
+export async function readReviewBundle(): Promise<EvidenceReviewBundle> {
+  const existing = await getJSON<EvidenceReviewBundle>(REVIEW_STATE_KEY);
+  if (existing) return existing;
+  const manifest = await readExtractionManifest();
   const bundle: EvidenceReviewBundle = {
     version: 1,
     updatedAt: new Date().toISOString(),
     items: manifest.images.map(defaultState),
   };
-  writeReviewBundle(bundle, "system", "initialise", []);
+  await writeReviewBundle(bundle, "system", "initialise", []);
   return bundle;
 }
 
-export function writeReviewBundle(bundle: EvidenceReviewBundle, reviewerInitials: string, action: string, changedFields: string[]) {
-  mkdirSync(PRIVATE_EVIDENCE_DIR, { recursive: true });
-  backup(REVIEW_STATE_PATH, "review-state");
+export async function writeReviewBundle(bundle: EvidenceReviewBundle, reviewerInitials: string, action: string, changedFields: string[]) {
+  const previous = await getJSON<EvidenceReviewBundle>(REVIEW_STATE_KEY);
   const next = { ...bundle, updatedAt: new Date().toISOString() };
-  writeFileSync(REVIEW_STATE_PATH, JSON.stringify(next, null, 2));
-  appendFileSync(
-    HISTORY_PATH,
-    JSON.stringify({
-      timestamp: new Date().toISOString(),
-      evidenceId: "review-state",
-      extractionId: "",
-      reviewerInitials: reviewerInitials || "system",
-      action,
-      changedFields,
-      previousValueSummary: "backup created when available",
-      newValueSummary: "private review-state updated",
-    }) + "\n",
-  );
+  await setJSON(REVIEW_STATE_KEY, next);
+  await appendHistory({
+    evidence_id: "review-state",
+    extraction_id: "",
+    reviewer_initials: reviewerInitials || "system",
+    action,
+    changed_fields: changedFields,
+    previous_value_summary: previous ? "backup captured in history" : "no prior state",
+    new_value_summary: "review-state updated",
+  });
 }
 
-export function originalPathForExtraction(extractionId: string) {
+export async function originalKeyForExtraction(extractionId: string): Promise<{ key: string; mimeType: string } | null> {
   if (!/^IMG-\d{3}$/.test(extractionId)) return null;
-  const record = readExtractionManifest().images.find((item) => item.extractionId === extractionId);
+  const manifest = await readExtractionManifest();
+  const record = manifest.images.find((item) => item.extractionId === extractionId);
   if (!record) return null;
-  const originalDir = resolve(PRIVATE_EVIDENCE_DIR, "originals");
-  const resolved = resolve(originalDir, basename(record.extractedFilename));
-  if (!resolved.startsWith(originalDir)) return null;
-  return { path: resolved, mimeType: record.mimeType };
+  return { key: `originals/${record.extractedFilename}`, mimeType: record.mimeType };
 }
 
 export function clampRegion(region: ReviewRegion): ReviewRegion | null {

@@ -8,8 +8,8 @@ import type { NarrativeCategory } from "@/types/report";
 const icons = [Network, MessageSquareText, FileSearch, Scale];
 const narrativeEvidenceIndexes = [0, 1, 2, 3];
 
-export function NarrativeSequence({ narrativeCategories }: { narrativeCategories: NarrativeCategory[] }) {
-  const evidenceRecords = getEvidenceRecords();
+export async function NarrativeSequence({ narrativeCategories }: { narrativeCategories: NarrativeCategory[] }) {
+  const evidenceRecords = await getEvidenceRecords();
   return (
     <div className="mt-12 space-y-12">
       {narrativeCategories.map((category, index) => {

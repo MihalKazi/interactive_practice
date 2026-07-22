@@ -16,8 +16,8 @@ export const metadata = {
   description: "Dataset breakdown, narrative categories, methodology, and recommendations.",
 };
 
-export default function ReportPage() {
-  const report = getReportContent();
+export default async function ReportPage() {
+  const report = await getReportContent();
   return (
     <>
       <SiteHeader />

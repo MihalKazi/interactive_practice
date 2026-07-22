@@ -48,14 +48,19 @@ export const viewport: Viewport = {
 
 export const dynamic = "force-dynamic";
 
-export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
-  const reportContent = getReportContent();
+export default async function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
+  const reportContent = await getReportContent();
   return (
     <html lang="en" className={`${sans.variable} ${serif.variable} scroll-smooth`} suppressHydrationWarning>
       <body suppressHydrationWarning>
-        <Script id="theme-init" strategy="beforeInteractive">
-          {"try{var t=localStorage.getItem('theme');if(!t)t=matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';document.documentElement.dataset.theme=t}catch(e){}"}
-        </Script>
+        <Script
+          id="theme-init"
+          strategy="beforeInteractive"
+          dangerouslySetInnerHTML={{
+            __html:
+              "try{var t=localStorage.getItem('theme');if(!t)t=matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';document.documentElement.dataset.theme=t}catch(e){}",
+          }}
+        />
         <ReportContentProvider value={reportContent}>{children}</ReportContentProvider>
       </body>
     </html>
