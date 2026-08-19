@@ -15,11 +15,6 @@ function isKeyword(word: string) {
   return KEYWORDS.has(word.toLowerCase().replace(/[^a-z]/gi, ""));
 }
 
-function readTime(text: string) {
-  const words = text.trim().split(/\s+/).length;
-  return Math.max(2600, words * 320);
-}
-
 const wordVariants = {
   hidden: { opacity: 0, filter: "blur(6px)", y: 10 },
   visible: { opacity: 1, filter: "blur(0px)", y: 0 },
@@ -54,25 +49,8 @@ type Stage = "lines" | "title" | "done";
 export function IntroSequence() {
   const reduceMotion = useReducedMotion();
   const [step, setStep] = useState(0);
-  const [stage, setStage] = useState<Stage>("lines");
-
-  useEffect(() => {
-    if (reduceMotion) {
-      setStage("done");
-      return;
-    }
-    if (stage === "lines") {
-      const timer = setTimeout(() => {
-        if (step < lines.length - 1) setStep((s) => s + 1);
-        else setStage("title");
-      }, readTime(lines[step]));
-      return () => clearTimeout(timer);
-    }
-    if (stage === "title") {
-      const timer = setTimeout(() => setStage("done"), 4200);
-      return () => clearTimeout(timer);
-    }
-  }, [step, stage, reduceMotion]);
+  const [rawStage, setStage] = useState<Stage>("lines");
+  const stage = reduceMotion ? "done" : rawStage;
 
   useEffect(() => {
     if (stage === "done") return;
@@ -82,15 +60,51 @@ export function IntroSequence() {
     };
   }, [stage]);
 
+  const advance = () => {
+    if (stage === "lines") {
+      if (step < lines.length - 1) setStep((s) => s + 1);
+      else setStage("title");
+    } else if (stage === "title") {
+      setStage("done");
+    }
+  };
+
   useEffect(() => {
     if (stage === "done") return;
-    const skip = (event: KeyboardEvent | MouseEvent) => {
-      if (event instanceof KeyboardEvent && event.key !== "Enter" && event.key !== " " && event.key !== "Escape") return;
-      setStage("done");
+
+    let locked = false;
+    const unlock = () => {
+      locked = false;
     };
-    window.addEventListener("keydown", skip);
-    return () => window.removeEventListener("keydown", skip);
-  }, [stage]);
+    const trigger = () => {
+      if (locked) return;
+      locked = true;
+      advance();
+      setTimeout(unlock, 500);
+    };
+
+    const onWheel = (event: WheelEvent) => {
+      if (Math.abs(event.deltaY) < 12) return;
+      trigger();
+    };
+
+    const onKey = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setStage("done");
+        return;
+      }
+      if (event.key !== "Enter" && event.key !== " " && event.key !== "ArrowDown") return;
+      trigger();
+    };
+
+    window.addEventListener("wheel", onWheel, { passive: true });
+    window.addEventListener("keydown", onKey);
+    return () => {
+      window.removeEventListener("wheel", onWheel);
+      window.removeEventListener("keydown", onKey);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [stage, step]);
 
   if (reduceMotion) return null;
 
@@ -98,9 +112,10 @@ export function IntroSequence() {
     <AnimatePresence>
       {stage !== "done" ? (
         <motion.div
-          className="fixed inset-0 z-100 flex items-center justify-center bg-background px-6 text-center"
+          className="fixed inset-0 z-100 flex items-center justify-center bg-background px-6 text-center sm:cursor-auto"
           exit={{ opacity: 0 }}
           transition={{ duration: 0.6 }}
+          onClick={advance}
         >
           <motion.div
             className="absolute left-6 top-8 font-mono text-sm font-bold uppercase tracking-[0.22em] text-foreground sm:left-10 sm:top-10 sm:text-base"
@@ -125,21 +140,35 @@ export function IntroSequence() {
               </motion.p>
             ) : (
               <motion.div key="title" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.6 }}>
-                <h1 className="font-serif text-[clamp(2.25rem,6vw,4rem)] tracking-[-0.02em] text-[var(--accent)]">Propaganda</h1>
+                <h1 className="font-serif text-[clamp(1.75rem,4.5vw,3rem)] tracking-[-0.02em] text-[var(--accent)]">
+                  How &apos;murtad&apos; became a recurring narrative against Bangladesh&apos;s armed forces
+                </h1>
                 <p className="mt-3 max-w-lg font-serif text-[clamp(1rem,2vw,1.25rem)] text-muted">
                   An Analysis of Extremist Campaigns Targeting the Bangladesh Armed Forces
                 </p>
-                <p className="mt-6 text-base font-bold uppercase tracking-[0.14em] text-foreground sm:text-lg">
+                <p className="mt-6 font-serif text-[clamp(1.5rem,3.5vw,2.25rem)] font-bold uppercase tracking-[0.08em] text-[var(--accent)]">
                   August 12, 2026 · Activate Rights
                 </p>
               </motion.div>
             )}
           </AnimatePresence>
 
+          <motion.p
+            className="absolute bottom-8 font-mono text-xs uppercase tracking-[0.16em] text-muted"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.5, delay: 0.8 }}
+          >
+            <span className="sm:hidden">Tap to continue</span>
+            <span className="hidden sm:inline">Scroll to continue</span>
+          </motion.p>
           <button
             type="button"
-            onClick={() => setStage("done")}
-            className="absolute bottom-8 font-mono text-xs uppercase tracking-[0.16em] text-muted transition hover:text-[var(--accent)]"
+            onClick={(event) => {
+              event.stopPropagation();
+              setStage("done");
+            }}
+            className="absolute bottom-8 right-6 font-mono text-xs uppercase tracking-[0.16em] text-muted transition hover:text-[var(--accent)] sm:right-10"
           >
             Skip
           </button>
