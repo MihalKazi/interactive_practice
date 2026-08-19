@@ -1,7 +1,8 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { motion, type Transition, useReducedMotion } from "framer-motion";
+import Image from "next/image";
 import { Button } from "@/components/ui/Button";
 import { Container } from "@/components/ui/Container";
 import { CountValue } from "@/components/report/StatGrid";
@@ -13,60 +14,20 @@ const fadeUp = {
 };
 
 const DECODE_WORDS = ["MURTAD", "TAGHUT", "APOSTATE"];
-const TEXTURE_WORDS = ["MURTAD", "TAGHUT", "APOSTATE"];
 
-function RedactionSpotlight() {
-  const reduceMotion = useReducedMotion();
-  const containerRef = useRef<HTMLDivElement | null>(null);
-
-  useEffect(() => {
-    const el = containerRef.current;
-    if (!el) return;
-    const supportsHover = window.matchMedia("(hover: hover) and (pointer: fine)").matches;
-
-    if (supportsHover) {
-      const onMove = (event: PointerEvent) => {
-        const rect = el.getBoundingClientRect();
-        el.style.setProperty("--spot-x", `${event.clientX - rect.left}px`);
-        el.style.setProperty("--spot-y", `${event.clientY - rect.top}px`);
-      };
-      window.addEventListener("pointermove", onMove);
-      return () => window.removeEventListener("pointermove", onMove);
-    }
-
-    if (reduceMotion) {
-      el.style.setProperty("--spot-x", "50%");
-      el.style.setProperty("--spot-y", "42%");
-      return;
-    }
-
-    let raf = 0;
-    const start = performance.now();
-    const loop = (now: number) => {
-      const elapsed = (now - start) / 1000;
-      const rect = el.getBoundingClientRect();
-      const x = rect.width * (0.5 + 0.34 * Math.sin(elapsed * 0.32));
-      const y = rect.height * (0.42 + 0.24 * Math.cos(elapsed * 0.24));
-      el.style.setProperty("--spot-x", `${x}px`);
-      el.style.setProperty("--spot-y", `${y}px`);
-      raf = requestAnimationFrame(loop);
-    };
-    raf = requestAnimationFrame(loop);
-    return () => cancelAnimationFrame(raf);
-  }, [reduceMotion]);
-
+function HeroPhoto() {
   return (
-    <div ref={containerRef} className="hero-redaction" aria-hidden="true">
-      <div className="hero-redaction-text">
-        {Array.from({ length: 140 }).map((_, i) => (
-          <span key={i}>{TEXTURE_WORDS[i % TEXTURE_WORDS.length]}</span>
-        ))}
+    <div className="hero-redaction" aria-hidden="true">
+      <div className="hero-redaction-photo">
+        <Image
+          src="/evidence/source/hero-jamaat-condolence-post-v2.png"
+          alt=""
+          fill
+          priority
+          sizes="100vw"
+          className="object-cover"
+        />
       </div>
-      <div className="hero-redaction-numeral font-serif">
-        <span>Murtad</span>
-        <span>Taghut</span>
-      </div>
-      <div className="hero-redaction-mask" />
     </div>
   );
 }
@@ -142,7 +103,7 @@ export function HeroSection() {
 
   return (
     <section className="relative min-h-[90vh] overflow-hidden border-b border-[var(--border)] py-16 sm:py-20 lg:min-h-[calc(100vh-4rem)] lg:py-24">
-      <RedactionSpotlight />
+      <HeroPhoto />
       <div className="absolute inset-0" aria-hidden="true">
         <div
           className="absolute inset-0"
