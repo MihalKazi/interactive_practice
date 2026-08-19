@@ -24,9 +24,11 @@ export function MobileNavigation({
     };
     document.addEventListener("keydown", onKeyDown);
     document.body.style.overflow = "hidden";
+    document.documentElement.style.overflow = "hidden";
     return () => {
       document.removeEventListener("keydown", onKeyDown);
       document.body.style.overflow = "";
+      document.documentElement.style.overflow = "";
     };
   }, [open]);
 

@@ -15,10 +15,12 @@ export function ScrollyStep({
 }) {
   return (
     <article className={`scrolly-step ${active ? "is-active" : ""}`} data-step-index={index}>
-      <p className="font-mono text-sm text-[var(--accent)]">{String(index + 1).padStart(2, "0")}</p>
-      {step.eyebrow ? <p className="eyebrow mt-4 text-[var(--muted)]">{step.eyebrow}</p> : null}
-      <h3 className="mt-3 text-2xl font-semibold">{step.title}</h3>
-      <div className="mt-4 space-y-4 text-base leading-8 text-[var(--muted)]">{step.body}</div>
+      <p className="font-mono text-xs text-[var(--accent)] sm:text-sm">{String(index + 1).padStart(2, "0")}</p>
+      {step.eyebrow ? <p className="eyebrow mt-3 text-[var(--muted)] sm:mt-4">{step.eyebrow}</p> : null}
+      <h3 className="mt-2 text-lg font-semibold sm:mt-3 sm:text-2xl">{step.title}</h3>
+      <div className="mt-3 space-y-3 text-sm leading-6 text-[var(--muted)] sm:mt-4 sm:space-y-4 sm:text-base sm:leading-8">
+        {step.body}
+      </div>
     </article>
   );
 }

@@ -54,6 +54,8 @@ export function ScrollyChapter({
   dark = false,
   hideVisualHeader = false,
   popEffect = false,
+  mobileStatic = false,
+  mobileStaticStep,
 }: {
   id?: string;
   title: string;
@@ -65,6 +67,8 @@ export function ScrollyChapter({
   dark?: boolean;
   hideVisualHeader?: boolean;
   popEffect?: boolean;
+  mobileStatic?: boolean;
+  mobileStaticStep?: number;
 }) {
   const { activeStep, activeStepProgress, stepRefs } = useActiveScrollStep(steps.length);
   const reduced = useReducedMotionPreference();
@@ -109,6 +113,13 @@ export function ScrollyChapter({
         </motion.div>
         <motion.div className="scrolly-copy lg:order-1" {...enterProps}>
           <ScrollyProgress count={steps.length} active={active} title={title} />
+          {mobileStatic ? (
+            <div className="mt-6 lg:hidden">
+              <StickyVisualStage title={visualTitle} source={source} caption={caption} hideHeader={hideVisualHeader}>
+                {renderVisual(mobileStaticStep ?? steps.length - 1, undefined, "mobile-static")}
+              </StickyVisualStage>
+            </div>
+          ) : null}
           {steps.map((step, index) => (
             <div
               key={index}
@@ -118,11 +129,13 @@ export function ScrollyChapter({
               data-step-index={index}
             >
               <ScrollyStep step={step} index={index} active={index === active} />
-              <MobileStepVisual reduced={Boolean(reduced)}>
-                <StickyVisualStage title={visualTitle} source={source} caption={caption} hideHeader={hideVisualHeader}>
-                  {renderVisual(index, undefined, `mobile-${index}`)}
-                </StickyVisualStage>
-              </MobileStepVisual>
+              {mobileStatic ? null : (
+                <MobileStepVisual reduced={Boolean(reduced)}>
+                  <StickyVisualStage title={visualTitle} source={source} caption={caption} hideHeader={hideVisualHeader}>
+                    {renderVisual(index, undefined, `mobile-${index}`)}
+                  </StickyVisualStage>
+                </MobileStepVisual>
+              )}
             </div>
           ))}
         </motion.div>

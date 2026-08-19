@@ -261,6 +261,8 @@ export function ProfileIdentityGrid() {
         caption="Markers are neutral aggregate placeholders. Click any cell to inspect its classification, account name, and source links below."
         steps={steps}
         renderVisual={renderVisual}
+        mobileStatic
+        mobileStaticStep={0}
       />
 
     </section>

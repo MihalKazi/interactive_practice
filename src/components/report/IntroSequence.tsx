@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 
 const lines = [
@@ -55,46 +55,74 @@ export function IntroSequence() {
   useEffect(() => {
     if (stage === "done") return;
     document.body.style.overflow = "hidden";
+    document.documentElement.style.overflow = "hidden";
     return () => {
       document.body.style.overflow = "";
+      document.documentElement.style.overflow = "";
     };
   }, [stage]);
 
+  const stageRef = useRef(stage);
+  const stepRef = useRef(step);
+  useEffect(() => {
+    stageRef.current = stage;
+    stepRef.current = step;
+  }, [stage, step]);
+
   const advance = () => {
-    if (stage === "lines") {
-      if (step < lines.length - 1) setStep((s) => s + 1);
+    if (stageRef.current === "lines") {
+      if (stepRef.current < lines.length - 1) setStep((s) => s + 1);
       else setStage("title");
-    } else if (stage === "title") {
+    } else if (stageRef.current === "title") {
       setStage("done");
     }
   };
 
-  useEffect(() => {
-    if (stage === "done") return;
+  const goBack = () => {
+    if (stageRef.current === "title") {
+      setStage("lines");
+      setStep(lines.length - 1);
+    } else if (stageRef.current === "lines" && stepRef.current > 0) {
+      setStep((s) => s - 1);
+    }
+  };
 
+  useEffect(() => {
     let locked = false;
-    const unlock = () => {
-      locked = false;
+    let idleTimer: ReturnType<typeof setTimeout> | null = null;
+    const scheduleUnlock = () => {
+      if (idleTimer) clearTimeout(idleTimer);
+      idleTimer = setTimeout(() => {
+        locked = false;
+      }, 400);
     };
-    const trigger = () => {
-      if (locked) return;
-      locked = true;
-      advance();
-      setTimeout(unlock, 500);
+    const trigger = (direction: 1 | -1) => {
+      if (stageRef.current === "done") return;
+      if (!locked) {
+        locked = true;
+        if (direction === 1) advance();
+        else goBack();
+      }
+      scheduleUnlock();
     };
 
     const onWheel = (event: WheelEvent) => {
       if (Math.abs(event.deltaY) < 12) return;
-      trigger();
+      trigger(event.deltaY > 0 ? 1 : -1);
     };
 
     const onKey = (event: KeyboardEvent) => {
+      if (stageRef.current === "done") return;
       if (event.key === "Escape") {
         setStage("done");
         return;
       }
+      if (event.key === "ArrowUp") {
+        trigger(-1);
+        return;
+      }
       if (event.key !== "Enter" && event.key !== " " && event.key !== "ArrowDown") return;
-      trigger();
+      trigger(1);
     };
 
     window.addEventListener("wheel", onWheel, { passive: true });
@@ -102,9 +130,9 @@ export function IntroSequence() {
     return () => {
       window.removeEventListener("wheel", onWheel);
       window.removeEventListener("keydown", onKey);
+      if (idleTimer) clearTimeout(idleTimer);
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [stage, step]);
+  }, []);
 
   if (reduceMotion) return null;
 
@@ -140,14 +168,10 @@ export function IntroSequence() {
               </motion.p>
             ) : (
               <motion.div key="title" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.6 }}>
-                <h1 className="font-serif text-[clamp(1.75rem,4.5vw,3rem)] tracking-[-0.02em] text-[var(--accent)]">
-                  How &apos;murtad&apos; became a recurring narrative against Bangladesh&apos;s armed forces
-                </h1>
-                <p className="mt-3 max-w-lg font-serif text-[clamp(1rem,2vw,1.25rem)] text-muted">
-                  An Analysis of Extremist Campaigns Targeting the Bangladesh Armed Forces
-                </p>
-                <p className="mt-6 font-serif text-[clamp(1.5rem,3.5vw,2.25rem)] font-bold uppercase tracking-[0.08em] text-[var(--accent)]">
-                  August 12, 2026 · Activate Rights
+                <p className="font-serif text-[clamp(1.75rem,4.5vw,2.75rem)] font-bold uppercase tracking-[0.08em] text-[var(--accent)]">
+                  August 12, 2026
+                  <br />
+                  Activate Rights
                 </p>
               </motion.div>
             )}

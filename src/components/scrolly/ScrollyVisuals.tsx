@@ -604,32 +604,18 @@ function CommentSlider({ comments }: { comments: Comment[] }) {
 export function IncidentPostSlider({ posts: incidentPosts }: { posts: ConversationPost[] }) {
   const [index, setIndex] = useState(0);
   const [paused, setPaused] = useState(false);
-  const [lightboxOpen, setLightboxOpen] = useState(false);
   const active = incidentPosts[index];
-  const closeButtonRef = useRef<HTMLButtonElement>(null);
 
   const goPrev = () => setIndex((i) => Math.max(0, i - 1));
   const goNext = () => setIndex((i) => Math.min(incidentPosts.length - 1, i + 1));
 
   useEffect(() => {
-    if (paused || lightboxOpen || incidentPosts.length <= 1) return;
+    if (paused || incidentPosts.length <= 1) return;
     const timer = setInterval(() => {
       setIndex((i) => (i + 1) % incidentPosts.length);
     }, 4000);
     return () => clearInterval(timer);
-  }, [paused, lightboxOpen, incidentPosts.length]);
-
-  useEffect(() => {
-    if (!lightboxOpen) return;
-    closeButtonRef.current?.focus();
-    const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape") setLightboxOpen(false);
-      if (event.key === "ArrowRight") goNext();
-      if (event.key === "ArrowLeft") goPrev();
-    };
-    document.addEventListener("keydown", onKeyDown);
-    return () => document.removeEventListener("keydown", onKeyDown);
-  }, [lightboxOpen, incidentPosts.length]);
+  }, [paused, incidentPosts.length]);
 
   return (
     <div className="space-y-3" onMouseEnter={() => setPaused(true)} onMouseLeave={() => setPaused(false)}>
@@ -673,43 +659,7 @@ export function IncidentPostSlider({ posts: incidentPosts }: { posts: Conversati
           exit={{ opacity: 0, x: -16 }}
           transition={{ duration: 0.3 }}
         >
-          {active.pending ? (
-            <ScreenshotPost post={active} badge="Verified post" />
-          ) : (
-            <div className="space-y-2">
-              <p className="font-mono text-xs font-bold uppercase tracking-[0.14em] text-[var(--muted)]">
-                Verified post · {active.name} · {active.dateLabel}
-              </p>
-              <button
-                type="button"
-                onClick={() => setLightboxOpen(true)}
-                className="relative block max-h-[300px] min-h-[160px] w-full cursor-zoom-in overflow-hidden border border-[var(--border)] bg-[var(--surface)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--accent)]"
-                aria-label={`View ${active.name}'s post enlarged`}
-              >
-                <Image
-                  src={active.imageSrc}
-                  alt={active.imageAlt}
-                  width={1600}
-                  height={1000}
-                  sizes="(max-width: 768px) 100vw, 60vw"
-                  className="h-auto max-h-[300px] w-full object-contain"
-                />
-              </button>
-              {active.translatedSummary ? (
-                <p className="line-clamp-2 text-sm italic leading-snug text-[var(--muted)]">{active.translatedSummary}</p>
-              ) : null}
-              {active.sourceUrl ? (
-                <a
-                  href={active.sourceUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-block font-mono text-[10px] uppercase tracking-[0.12em] text-[var(--accent)] underline decoration-[var(--border)] underline-offset-4 transition hover:decoration-[var(--accent)]"
-                >
-                  View archived source ↗
-                </a>
-              ) : null}
-            </div>
-          )}
+          <ScreenshotPost post={active} badge="Verified post" />
         </motion.div>
       </AnimatePresence>
 
@@ -731,58 +681,6 @@ export function IncidentPostSlider({ posts: incidentPosts }: { posts: Conversati
           Next →
         </button>
       </div>
-
-      {lightboxOpen && !active.pending
-        ? createPortal(
-            <div
-              role="dialog"
-              aria-modal="true"
-              aria-label={`Enlarged view: ${active.name}'s post`}
-              className="fixed inset-0 z-[200] flex items-center justify-center bg-black/90 p-6"
-            >
-              <button
-                ref={closeButtonRef}
-                type="button"
-                onClick={() => setLightboxOpen(false)}
-                aria-label="Close enlarged view"
-                className="fixed right-4 top-4 z-10 flex size-10 items-center justify-center border border-white/30 bg-black/60 text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--accent)]"
-              >
-                <X className="size-5" aria-hidden="true" />
-              </button>
-
-              <button
-                type="button"
-                onClick={goPrev}
-                disabled={index === 0}
-                aria-label="Previous post"
-                className="fixed left-4 top-1/2 z-10 flex size-10 -translate-y-1/2 items-center justify-center border border-white/30 bg-black/60 text-white transition disabled:opacity-30 hover:not-disabled:text-[var(--accent)]"
-              >
-                <ChevronLeft className="size-5" aria-hidden="true" />
-              </button>
-              <button
-                type="button"
-                onClick={goNext}
-                disabled={index === incidentPosts.length - 1}
-                aria-label="Next post"
-                className="fixed right-4 top-1/2 z-10 flex size-10 -translate-y-1/2 items-center justify-center border border-white/30 bg-black/60 text-white transition disabled:opacity-30 hover:not-disabled:text-[var(--accent)]"
-              >
-                <ChevronRight className="size-5" aria-hidden="true" />
-              </button>
-
-              <span className="fixed bottom-4 left-1/2 z-10 -translate-x-1/2 font-mono text-xs text-white/70">
-                Post {index + 1} of {incidentPosts.length} — {active.name}
-              </span>
-
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={active.imageSrc}
-                alt={active.imageAlt}
-                className="max-h-[80vh] max-w-[90vw] select-none object-contain"
-              />
-            </div>,
-            document.body,
-          )
-        : null}
     </div>
   );
 }
@@ -936,10 +834,13 @@ export function PatternReveal({ onClose }: { onClose: () => void }) {
   }, [onClose]);
 
   useEffect(() => {
-    const previous = document.body.style.overflow;
+    const previousBody = document.body.style.overflow;
+    const previousHtml = document.documentElement.style.overflow;
     document.body.style.overflow = "hidden";
+    document.documentElement.style.overflow = "hidden";
     return () => {
-      document.body.style.overflow = previous;
+      document.body.style.overflow = previousBody;
+      document.documentElement.style.overflow = previousHtml;
     };
   }, []);
 
@@ -1114,16 +1015,17 @@ export function TimelineVisual({ step }: { step: number }) {
   const expandedPoint = expanded !== null ? points[expanded] : null;
 
   const viewW = 900;
-  const viewH = 600;
-  const hub = { x: 250, y: 300 };
+  const viewH = 660;
+  const hub = { x: 250, y: 330 };
 
+  const round = (n: number) => Math.round(n * 100) / 100;
   const toXY = (angleDeg: number, r: number) => {
     const rad = (angleDeg * Math.PI) / 180;
-    return { x: hub.x + r * Math.cos(rad), y: hub.y + r * Math.sin(rad) };
+    return { x: round(hub.x + r * Math.cos(rad)), y: round(hub.y + r * Math.sin(rad)) };
   };
   const toPct = (p: { x: number; y: number }) => ({ left: `${(p.x / viewW) * 100}%`, top: `${(p.y / viewH) * 100}%` });
 
-  const incidentSpread = incidents.length > 1 ? 110 : 0;
+  const incidentSpread = incidents.length > 1 ? 140 : 0;
   const incidentStart = -incidentSpread / 2;
   const incidentAngle = (i: number) =>
     incidents.length > 1 ? incidentStart + i * (incidentSpread / (incidents.length - 1)) : 0;
@@ -1132,7 +1034,7 @@ export function TimelineVisual({ step }: { step: number }) {
 
   return (
     <div className="root-timeline-visual">
-      <div className="relative w-full" style={{ aspectRatio: `${viewW} / ${viewH}` }}>
+      <div className="relative w-full min-h-[440px] sm:min-h-0" style={{ aspectRatio: `${viewW} / ${viewH}` }}>
         <svg
           viewBox={`0 0 ${viewW} ${viewH}`}
           preserveAspectRatio="none"
@@ -1143,8 +1045,8 @@ export function TimelineVisual({ step }: { step: number }) {
             const pi = i + 1;
             const passed = pi <= step;
             const angle = incidentAngle(i);
-            const end = toXY(angle, 235);
-            const mid = toXY(angle, 130);
+            const end = toXY(angle, 250);
+            const mid = toXY(angle, 140);
             const d = `M ${hub.x} ${hub.y} Q ${mid.x} ${mid.y} ${end.x} ${end.y}`;
             return (
               <g key={point.year}>
@@ -1172,7 +1074,7 @@ export function TimelineVisual({ step }: { step: number }) {
           const passed = pi <= step;
           const clickable = passed && Boolean(point.sourceLinks?.length || point.breakdown?.length);
           const angle = incidentAngle(i);
-          const pos = toPct(toXY(angle, 235));
+          const pos = toPct(toXY(angle, 250));
           return (
             <button
               key={point.year}
