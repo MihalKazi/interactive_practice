@@ -21,6 +21,7 @@ export function TimelinePreview() {
         source="Propaganda: An Analysis of Extremist Campaigns Targeting the Bangladesh Armed Forces (2026)"
         steps={steps}
         renderVisual={(active) => <TimelineVisual step={active} />}
+        mobileStatic
       />
       <div className="mx-auto max-w-7xl px-5 pb-4 sm:px-8 lg:px-12">
         <p className="text-xs text-[var(--muted)]">
