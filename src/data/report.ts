@@ -1,8 +1,7 @@
 import type { ReportData } from "@/types/report";
 
 export const defaultReport: ReportData = {
-  title:
-    "Propaganda: An Analysis of Extremist Campaigns Targeting the Bangladesh Armed Forces",
+  title: "How 'murtad' became a recurring narrative against Bangladesh's armed forces",
   author: "Activate Rights",
   date: "August 12, 2026",
   heroTagline:

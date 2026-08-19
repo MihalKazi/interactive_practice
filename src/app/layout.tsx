@@ -18,14 +18,14 @@ const serif = Noto_Serif_Bengali({
 });
 
 export const metadata: Metadata = {
-  title: "Propaganda: An Analysis of Extremist Campaigns Targeting the Bangladesh Armed Forces",
+  title: "How 'murtad' became a recurring narrative against Bangladesh's armed forces",
   description:
     "An interactive data-led investigation into extremist online narratives targeting the Bangladesh Armed Forces.",
   authors: [{ name: "Tech and Hate" }],
   metadataBase: new URL("https://example.com"),
   alternates: { canonical: "/" },
   openGraph: {
-    title: "Propaganda: An Analysis of Extremist Campaigns Targeting the Bangladesh Armed Forces",
+    title: "How 'murtad' became a recurring narrative against Bangladesh's armed forces",
     description:
       "An interactive data-led investigation into extremist online narratives targeting the Bangladesh Armed Forces.",
     type: "article",
@@ -35,7 +35,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Propaganda: An Analysis of Extremist Campaigns Targeting the Bangladesh Armed Forces",
+    title: "How 'murtad' became a recurring narrative against Bangladesh's armed forces",
     description:
       "An interactive data-led investigation into extremist online narratives targeting the Bangladesh Armed Forces.",
   },
