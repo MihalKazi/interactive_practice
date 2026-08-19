@@ -4,11 +4,16 @@ import { useState } from "react";
 import Image from "next/image";
 import { EvidenceAnnotation } from "@/components/evidence/EvidenceAnnotation";
 import { EvidenceCaption } from "@/components/evidence/EvidenceCaption";
+import { EvidenceContentWarning } from "@/components/evidence/EvidenceContentWarning";
 import { EvidenceImage, isEvidenceRenderable } from "@/components/evidence/EvidenceImage";
 import { EvidenceLightbox } from "@/components/evidence/EvidenceLightbox";
 import { EvidenceMetadata } from "@/components/evidence/EvidenceMetadata";
 import { EvidenceStatusPanel } from "@/components/evidence/EvidenceStatusPanel";
 import type { EvidenceRecord } from "@/types/evidence";
+
+const GATED_IMAGE_PATHS: Record<string, string> = {
+  "EV-006": "/evidence/source/ev-006-incitement-post.png",
+};
 
 function ViewerBody({ record, step = 0 }: { record: EvidenceRecord; step?: number }) {
   const [lightboxOpen, setLightboxOpen] = useState(false);
@@ -19,6 +24,7 @@ function ViewerBody({ record, step = 0 }: { record: EvidenceRecord; step?: numbe
     .sort((a, b) => a.mobileOrder - b.mobileOrder);
 
   const renderable = isEvidenceRenderable(record);
+  const gatedImage = GATED_IMAGE_PATHS[record.id];
 
   return (
     <figure className="evidence-frame">
@@ -36,6 +42,14 @@ function ViewerBody({ record, step = 0 }: { record: EvidenceRecord; step?: numbe
         >
           <Image src={record.publicImagePath!} alt={record.publicCaption} fill sizes="(max-width: 768px) 100vw, 70vw" className="object-contain" loading="lazy" />
         </button>
+      ) : gatedImage && record.contentWarning ? (
+        <div className="p-4">
+          <EvidenceContentWarning warning={record.contentWarning}>
+            <div className="relative aspect-[16/10] w-full overflow-hidden bg-[var(--background)]">
+              <Image src={gatedImage} alt={record.summary} fill sizes="(max-width: 768px) 100vw, 70vw" className="object-contain" loading="lazy" />
+            </div>
+          </EvidenceContentWarning>
+        </div>
       ) : (
         <EvidenceImage record={record} />
       )}

@@ -43,7 +43,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#151412",
+  themeColor: "#14150f",
 };
 
 export const dynamic = "force-dynamic";

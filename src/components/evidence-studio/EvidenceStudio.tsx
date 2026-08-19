@@ -280,7 +280,7 @@ export function EvidenceStudio({
         <StudioBanner />
         <div className="studio-summary">
           <h1>Website evidence summary</h1>
-          <p className="mt-2 text-sm text-[#c8c0b4]">Simple readiness board. Nothing here publishes evidence.</p>
+          <p className="mt-2 text-sm text-[var(--muted)]">Simple readiness board. Nothing here publishes evidence.</p>
           <div className="mt-4 overflow-x-auto">
             <table className="min-w-full text-left text-sm">
               <thead><tr>{["Website item", "Status", "Boxes drawn", "Caption", "Needs", "Website publish"].map((h) => <th key={h} className="border-b border-[var(--border)] p-2">{h}</th>)}</tr></thead>
