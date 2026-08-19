@@ -131,7 +131,6 @@ html {
 
 body {
   min-height: 100vh;
-  overflow-x: hidden;
   background:
     radial-gradient(circle at 20% 0%, color-mix(in srgb, var(--surface-elevated) 80%, transparent), transparent 32rem),
     linear-gradient(90deg, color-mix(in srgb, var(--border-subtle) 45%, transparent) 1px, transparent 1px),
@@ -682,73 +681,19 @@ a {
   position: absolute;
   inset: 0;
   overflow: hidden;
-  --spot-x: 50%;
-  --spot-y: 42%;
 }
 
-.hero-redaction-text {
-  position: absolute;
-  inset: -15%;
-  display: flex;
-  flex-wrap: wrap;
-  align-content: flex-start;
-  gap: 1.4rem 2.4rem;
-  transform: rotate(-6deg);
-  font-family: var(--font-mono, ui-monospace, monospace);
-  font-size: 0.95rem;
-  font-weight: 700;
-  letter-spacing: 0.1em;
-  color: color-mix(in srgb, var(--foreground) 88%, transparent);
-  pointer-events: none;
-  -webkit-user-select: none;
-  user-select: none;
-}
-
-.hero-redaction-numeral {
-  position: absolute;
-  right: -2%;
-  top: 50%;
-  transform: translateY(-50%);
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-  font-weight: 700;
-  font-style: italic;
-  font-size: clamp(4.5rem, 9vw, 9rem);
-  line-height: 1;
-  color: color-mix(in srgb, var(--foreground) 88%, transparent);
-  pointer-events: none;
-  text-align: right;
-  -webkit-user-select: none;
-  user-select: none;
-}
-
-@media (max-width: 1023px) {
-  .hero-redaction-numeral {
-    font-size: clamp(2.75rem, 12vw, 5rem);
-    right: -3%;
-  }
-}
-
-.hero-redaction-mask {
+.hero-redaction-photo {
   position: absolute;
   inset: 0;
-  background: repeating-linear-gradient(
-    0deg,
-    #050503 0px,
-    #050503 22px,
-    color-mix(in srgb, #050503 92%, transparent) 22px,
-    color-mix(in srgb, #050503 92%, transparent) 26px
-  );
-  -webkit-mask-image: radial-gradient(circle 130px at var(--spot-x) var(--spot-y), transparent 0%, transparent 50%, white 85%);
-  mask-image: radial-gradient(circle 130px at var(--spot-x) var(--spot-y), transparent 0%, transparent 50%, white 85%);
+  opacity: 0.9;
 }
 
-@media (max-width: 640px) {
-  .hero-redaction-mask {
-    -webkit-mask-image: radial-gradient(circle 85px at var(--spot-x) var(--spot-y), transparent 0%, transparent 50%, white 85%);
-    mask-image: radial-gradient(circle 85px at var(--spot-x) var(--spot-y), transparent 0%, transparent 50%, white 85%);
-  }
+.hero-redaction-photo::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(100deg, var(--background) 0%, transparent 45%);
 }
 
 @keyframes thread-marquee {

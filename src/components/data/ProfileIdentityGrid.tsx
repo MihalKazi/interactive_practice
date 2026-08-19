@@ -89,7 +89,8 @@ export function ProfileIdentityGrid() {
   const emphasisType = (active: number): IdentityType | "all" =>
     active === 0 ? "all" : report.identityCategories[active - 1].id;
 
-  const renderVisual = (active: number) => {
+  const renderVisual = (active: number, _stepProgress?: number, instanceKey?: string) => {
+    const scope = instanceKey ?? "desktop";
     const emphasis = emphasisType(active);
     return (
       <div>
@@ -109,7 +110,7 @@ export function ProfileIdentityGrid() {
                 key={cell.id}
                 type="button"
                 data-profile-cell
-                layoutId={`profile-avatar-${cell.id}`}
+                layoutId={`profile-avatar-${scope}-${cell.id}`}
                 aria-pressed={isSelected}
                 aria-label={`${cell.displayLabel}. ${category.label}. Click for account name and links.`}
                 onClick={() => openCell(cell)}
@@ -162,7 +163,7 @@ export function ProfileIdentityGrid() {
                       onClick={closeExpanded}
                     />
                     <motion.div
-                      layoutId={`profile-avatar-${expandedCell.id}`}
+                      layoutId={`profile-avatar-${scope}-${expandedCell.id}`}
                       transition={{ type: "spring", stiffness: 320, damping: 30 }}
                       className="relative z-10 max-h-[90vh] w-full max-w-xl overflow-y-auto border border-[var(--border)] bg-[var(--surface-elevated)] p-6 text-left shadow-2xl"
                     >

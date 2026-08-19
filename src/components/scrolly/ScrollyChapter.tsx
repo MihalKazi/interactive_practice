@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import { ScrollyProgress } from "@/components/scrolly/ScrollyProgress";
 import { ScrollyStep, type ScrollyStepData } from "@/components/scrolly/ScrollyStep";
@@ -8,6 +8,40 @@ import { StickyVisualStage } from "@/components/scrolly/StickyVisualStage";
 import { useActiveScrollStep } from "@/hooks/useActiveScrollStep";
 import { useReducedMotionPreference } from "@/hooks/useReducedMotionPreference";
 import { useStickySupport } from "@/hooks/useStickySupport";
+
+function MobileStepVisual({ reduced, children }: { reduced: boolean; children: React.ReactNode }) {
+  const ref = useRef<HTMLDivElement | null>(null);
+  const [visible, setVisible] = useState(reduced);
+
+  useEffect(() => {
+    if (reduced) return;
+    const el = ref.current;
+    if (!el) return;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0]?.isIntersecting) {
+          setVisible(true);
+          observer.disconnect();
+        }
+      },
+      { threshold: 0.1, rootMargin: "0px 0px -5% 0px" },
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [reduced]);
+
+  return (
+    <motion.div
+      ref={ref}
+      className="mt-6 lg:hidden"
+      initial={reduced ? false : { opacity: 0, y: 24, scale: 0.97 }}
+      animate={visible ? { opacity: 1, y: 0, scale: 1 } : undefined}
+      transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+    >
+      {children}
+    </motion.div>
+  );
+}
 
 export function ScrollyChapter({
   id,
@@ -27,7 +61,7 @@ export function ScrollyChapter({
   source: string;
   caption?: React.ReactNode;
   steps: ScrollyStepData[];
-  renderVisual: (activeStep: number, stepProgress?: number) => React.ReactNode;
+  renderVisual: (activeStep: number, stepProgress?: number, instanceKey?: string) => React.ReactNode;
   dark?: boolean;
   hideVisualHeader?: boolean;
   popEffect?: boolean;
@@ -61,7 +95,7 @@ export function ScrollyChapter({
       </p>
       <div className="mx-auto max-w-7xl gap-10 px-5 py-16 sm:px-8 lg:grid lg:grid-cols-[0.4fr_0.6fr] lg:px-12">
         <motion.div
-          className={`${stickySupported ? "sticky top-24" : ""} lg:order-2 lg:self-start`}
+          className={`hidden lg:block ${stickySupported ? "lg:sticky lg:top-24" : ""} lg:order-2 lg:self-start`}
           {...enterProps}
         >
           <StickyVisualStage title={visualTitle} source={source} caption={caption} hideHeader={hideVisualHeader}>
@@ -84,6 +118,11 @@ export function ScrollyChapter({
               data-step-index={index}
             >
               <ScrollyStep step={step} index={index} active={index === active} />
+              <MobileStepVisual reduced={Boolean(reduced)}>
+                <StickyVisualStage title={visualTitle} source={source} caption={caption} hideHeader={hideVisualHeader}>
+                  {renderVisual(index, undefined, `mobile-${index}`)}
+                </StickyVisualStage>
+              </MobileStepVisual>
             </div>
           ))}
         </motion.div>
