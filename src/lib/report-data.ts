@@ -1,6 +1,6 @@
 import type { IdeologicalCategory, IdentityCategory, ProfileGridCell } from "@/types/report";
 
-export const TOTAL_PROFILES = 61;
+export const TOTAL_PROFILES = 73;
 
 export function calculatePercentage(value: number, total = TOTAL_PROFILES) {
   return (value / total) * 100;
@@ -40,7 +40,7 @@ export function generateIdentityGrid(categories: IdentityCategory[]): ProfileGri
     }),
   );
   if (process.env.NODE_ENV !== "production" && cells.length !== TOTAL_PROFILES) {
-    throw new Error(`Identity grid validation failed: expected 61 cells, got ${cells.length}.`);
+    throw new Error(`Identity grid validation failed: expected ${TOTAL_PROFILES} cells, got ${cells.length}.`);
   }
   return cells;
 }

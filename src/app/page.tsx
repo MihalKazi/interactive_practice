@@ -7,7 +7,7 @@ import { EvidenceSequence } from "@/components/evidence/EvidenceSequence";
 import { HeroSection } from "@/components/report/HeroSection";
 import { IntroSequence } from "@/components/report/IntroSequence";
 import { MethodologySection } from "@/components/report/MethodologySection";
-import { NarrativeSequence } from "@/components/report/NarrativeSequence";
+import { NarrativeEscalation } from "@/components/report/NarrativeEscalation";
 import { RecommendationList } from "@/components/report/RecommendationList";
 import { SectionHeading } from "@/components/report/SectionHeading";
 import { StatGrid } from "@/components/report/StatGrid";
@@ -16,28 +16,29 @@ import { ChapterTransition } from "@/components/scrolly/ChapterTransition";
 import { TriggeringEventScrolly } from "@/components/scrolly/TriggeringEventScrolly";
 import { Divider } from "@/components/ui/Divider";
 import { getReportContent } from "@/lib/report-content-store";
-import { getEvidenceRecords } from "@/lib/evidence-store";
 
 export default async function Home() {
   const report = await getReportContent();
-  const evidenceRecords = await getEvidenceRecords();
   return (
     <>
       <IntroSequence />
       <SiteHeader />
-      {process.env.NODE_ENV === "development" ? (
-        <a
-          href="/admin"
-          className="fixed bottom-4 left-4 z-50 border border-[var(--accent)] bg-[var(--surface-elevated)] px-4 py-3 text-sm font-semibold shadow-lg focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--accent)]"
-        >
-          Open Admin Panel
-        </a>
-      ) : null}
       <main id="main" className="flex-1">
         <HeroSection />
 
-        <ChapterTransition number="01" label="Triggering event" statement="A national event becomes a contested public space." dark />
-        <TriggeringEventScrolly evidenceRecords={evidenceRecords} />
+        <ChapterTransition number="01" label="Triggering event" statement="A condolence post becomes a contested public space." dark />
+        <TriggeringEventScrolly />
+
+        <ChapterTransition
+          number="02"
+          label="Inside the full dataset"
+          statement="36 of 73 profiles run on fake or pseudonymous identities."
+        />
+
+        <EditorialSection id="dataset">
+          <SectionHeading eyebrow="Inside the dataset" title="73 profiles, classified" />
+          <DatasetPreview />
+        </EditorialSection>
 
         <EditorialSection id="key-findings" className="py-10 sm:py-14">
           <SectionHeading
@@ -49,50 +50,21 @@ export default async function Home() {
         </EditorialSection>
 
         <ChapterTransition
-          number="02"
+          number="03"
           label="Historical origin"
           statement="One fatwa from 2015. Still the script for every narrative that follows."
         />
 
-        <EditorialSection id="origins">
-          <SectionHeading
-            eyebrow="Historical origin"
-            title="Where the 'murtad' narrative began"
-            description="A 2015 fatwa, now a shared talking point across otherwise distinct extremist factions."
-          />
-          <TimelinePreview evidenceRecord={evidenceRecords[2]} />
-        </EditorialSection>
-
-        <ChapterTransition
-          number="03"
-          label="Inside the full dataset"
-          statement="42 of 61 profiles run on fake or pseudonymous identities."
-        />
-
-        <EditorialSection id="dataset">
-          <SectionHeading
-            eyebrow="Inside the dataset"
-            title="61 profiles, classified"
-            description="Aggregate totals only. No account identities, row-level evidence, or relationship claims."
-          />
-          <DatasetPreview />
-        </EditorialSection>
+        <TimelinePreview />
 
         <ChapterTransition
           number="04"
-          label="Four narrative categories"
-          statement="Six peacekeepers died. Their condolence posts became the delivery channel."
+          label="Five narrative categories"
+          statement="One playbook, five escalating moves — each one built to lead into the next."
           dark
         />
 
-        <EditorialSection id="narratives-intro" className="bg-[var(--surface)] pb-0">
-          <SectionHeading
-            eyebrow="Four narrative categories"
-            title="How the same story gets retold"
-            description="Each category traced from trigger to talking point, with evidence status shown alongside. Scroll to move through each one."
-          />
-        </EditorialSection>
-        <NarrativeSequence narrativeCategories={report.narrativeCategories} evidenceRecords={evidenceRecords} />
+        <NarrativeEscalation narrativeCategories={report.narrativeCategories} />
 
         <ChapterTransition
           number="05"
@@ -106,24 +78,7 @@ export default async function Home() {
             title="What this proves, what it doesn't, what's next"
             description="The evidence standards, open caveats, and what should happen next."
           />
-          <h3 className="mt-10 text-sm font-semibold uppercase tracking-[0.12em] text-[var(--muted)]">Limitations</h3>
-          <div className="mt-4 grid gap-3 sm:grid-cols-2">
-            {report.limitations.map((item, index) => (
-              <details
-                key={item.title}
-                className="group border border-[var(--border)] bg-[var(--surface-elevated)] px-4 py-3 transition open:border-[var(--accent)] open:bg-[color-mix(in_srgb,var(--accent)_8%,var(--surface-elevated))]"
-                open={index < 2}
-              >
-                <summary className="flex cursor-pointer list-none items-center justify-between gap-3">
-                  <span className="text-sm font-semibold">{item.title}</span>
-                  <span className="shrink-0 text-lg leading-none text-[var(--accent)] transition-transform group-open:rotate-45">+</span>
-                </summary>
-                <p className="mt-2 text-sm leading-6 text-[var(--muted)]">{item.note}</p>
-              </details>
-            ))}
-          </div>
-
-          <h3 className="mt-12 text-sm font-semibold uppercase tracking-[0.12em] text-[var(--muted)]">Recommendations</h3>
+          <h3 className="mt-10 text-sm font-semibold uppercase tracking-[0.12em] text-[var(--muted)]">Recommendations</h3>
           <RecommendationList recommendations={report.recommendations} />
 
           <details id="methodology" className="mt-16 scroll-mt-28 border-t border-[var(--border)] pt-6">
@@ -135,7 +90,7 @@ export default async function Home() {
               <span className="text-2xl text-[var(--muted)] group-open:rotate-45">+</span>
             </summary>
             <div className="mt-6">
-              <MethodologySection stages={report.methodologyStages} />
+              <MethodologySection />
             </div>
           </details>
 
@@ -159,6 +114,14 @@ export default async function Home() {
           <p className="mt-8 max-w-3xl text-base leading-8 text-[var(--muted)]">
             Public release requires editorial review, legal review, source safety checks, and confirmation that no private notes or identifiable account information are exposed.
           </p>
+          <dl className="mt-8 grid gap-4 sm:grid-cols-3">
+            {report.credits.map((credit) => (
+              <div key={credit.role}>
+                <dt className="text-xs font-semibold uppercase tracking-[0.12em] text-[var(--muted)]">{credit.role}</dt>
+                <dd className="mt-1 text-sm font-medium text-[var(--foreground)]">{credit.name}</dd>
+              </div>
+            ))}
+          </dl>
         </EditorialSection>
       </main>
       <SiteFooter />

@@ -6,6 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "evidence:extract": "node scripts/extract-docx-evidence.mjs",
+    "evidence:seed-manifest": "node scripts/seed-evidence-manifest.mjs",
+    "evidence:upload-originals": "node scripts/upload-evidence-originals.mjs",
     "evidence:build": "node scripts/build-public-evidence.mjs",
     "evidence:validate": "node scripts/validate-evidence.mjs",
     "evidence:preview": "node scripts/evidence-preview.mjs",

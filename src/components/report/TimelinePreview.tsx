@@ -2,29 +2,32 @@
 
 import { ScrollyChapter } from "@/components/scrolly/ScrollyChapter";
 import { TimelineVisual } from "@/components/scrolly/ScrollyVisuals";
-import { EvidenceViewer } from "@/components/evidence/EvidenceViewer";
 import { useReportContent } from "@/components/providers/ReportContentProvider";
-import type { EvidenceRecord } from "@/types/evidence";
 
-export function TimelinePreview({ evidenceRecord }: { evidenceRecord: EvidenceRecord }) {
+export function TimelinePreview() {
   const report = useReportContent();
   const steps = report.timeline.map((point) => ({
     eyebrow: point.year,
     title: point.title,
     body: <p>{point.description}</p>,
   }));
+
   return (
     <>
       <ScrollyChapter
+        id="origins"
         title="Historical origin"
         visualTitle="Narrative timeline preview"
-        source="Source: Propaganda: An Analysis of Extremist Campaigns Targeting the Bangladesh Armed Forces (2026)"
-        caption="Dates and event descriptions are drawn from the source report. Screenshots and account-level detail remain pending editorial and legal review."
+        source="Propaganda: An Analysis of Extremist Campaigns Targeting the Bangladesh Armed Forces (2026)"
         steps={steps}
         renderVisual={(active) => <TimelineVisual step={active} />}
       />
-      <div className="mx-auto max-w-7xl px-5 pb-10 sm:px-8 lg:px-12">
-        <EvidenceViewer record={evidenceRecord} />
+      <div className="mx-auto max-w-7xl px-5 pb-4 sm:px-8 lg:px-12">
+        <p className="text-xs text-[var(--muted)]">
+          Source: Propaganda: An Analysis of Extremist Campaigns Targeting the Bangladesh Armed Forces (2026). Dates
+          and event descriptions are drawn from the source report. Screenshots and account-level detail remain
+          pending editorial and legal review.
+        </p>
       </div>
     </>
   );

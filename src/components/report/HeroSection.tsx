@@ -1,115 +1,98 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { motion, type Transition, useReducedMotion } from "framer-motion";
 import { Button } from "@/components/ui/Button";
 import { Container } from "@/components/ui/Container";
 import { CountValue } from "@/components/report/StatGrid";
 import { useReportContent } from "@/components/providers/ReportContentProvider";
-import { generateIdentityGrid } from "@/lib/report-data";
-import type { IdentityCategory, IdentityType } from "@/types/report";
 
 const fadeUp = {
   hidden: { opacity: 0, y: 18 },
   visible: { opacity: 1, y: 0 },
 };
 
-const identityDotColor: Record<IdentityType, string> = {
-  "fake-or-pseudonymous": "var(--identity-inauthentic)",
-  "apparently-real": "var(--identity-apparent)",
-  undetermined: "var(--identity-undetermined)",
-};
+const DECODE_WORDS = ["MURTAD", "TAGHUT", "APOSTATE"];
+const TEXTURE_WORDS = ["MURTAD", "TAGHUT", "APOSTATE"];
 
-// Deterministic pseudo-scatter so server and client render identical dot positions (avoids hydration mismatch from Math.random).
-function seededPosition(index: number) {
-  const a = Math.sin(index * 12.9898) * 43758.5453;
-  const b = Math.sin(index * 78.233) * 12543.859;
-  return {
-    x: (a - Math.floor(a)) * 100,
-    y: (b - Math.floor(b)) * 100,
-  };
-}
-
-function HeroNodeField({ identityCategories }: { identityCategories: IdentityCategory[] }) {
+function RedactionSpotlight() {
   const reduceMotion = useReducedMotion();
-  const cells = useMemo(() => generateIdentityGrid(identityCategories), [identityCategories]);
-  const positions = useMemo(() => cells.map((_, index) => seededPosition(index)), [cells]);
-  const edges = useMemo(() => {
-    const links: { a: number; b: number; dist: number }[] = [];
-    const threshold = 16;
-    for (let i = 0; i < positions.length; i += 1) {
-      for (let j = i + 1; j < positions.length; j += 1) {
-        const dx = positions[i].x - positions[j].x;
-        const dy = positions[i].y - positions[j].y;
-        const dist = Math.hypot(dx, dy);
-        if (dist < threshold) links.push({ a: i, b: j, dist });
-      }
+  const containerRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    const el = containerRef.current;
+    if (!el) return;
+    const supportsHover = window.matchMedia("(hover: hover) and (pointer: fine)").matches;
+
+    if (supportsHover) {
+      const onMove = (event: PointerEvent) => {
+        const rect = el.getBoundingClientRect();
+        el.style.setProperty("--spot-x", `${event.clientX - rect.left}px`);
+        el.style.setProperty("--spot-y", `${event.clientY - rect.top}px`);
+      };
+      window.addEventListener("pointermove", onMove);
+      return () => window.removeEventListener("pointermove", onMove);
     }
-    return links;
-  }, [positions]);
-  const ref = useRef<HTMLDivElement>(null);
-  const [tilt, setTilt] = useState({ x: 0, y: 0 });
+
+    if (reduceMotion) {
+      el.style.setProperty("--spot-x", "50%");
+      el.style.setProperty("--spot-y", "42%");
+      return;
+    }
+
+    let raf = 0;
+    const start = performance.now();
+    const loop = (now: number) => {
+      const elapsed = (now - start) / 1000;
+      const rect = el.getBoundingClientRect();
+      const x = rect.width * (0.5 + 0.34 * Math.sin(elapsed * 0.32));
+      const y = rect.height * (0.42 + 0.24 * Math.cos(elapsed * 0.24));
+      el.style.setProperty("--spot-x", `${x}px`);
+      el.style.setProperty("--spot-y", `${y}px`);
+      raf = requestAnimationFrame(loop);
+    };
+    raf = requestAnimationFrame(loop);
+    return () => cancelAnimationFrame(raf);
+  }, [reduceMotion]);
 
   return (
-    <div
-      ref={ref}
-      className="hero-node-field"
-      aria-hidden="true"
-      onMouseMove={(event) => {
-        if (reduceMotion || !ref.current) return;
-        const rect = ref.current.getBoundingClientRect();
-        const px = (event.clientX - rect.left) / rect.width - 0.5;
-        const py = (event.clientY - rect.top) / rect.height - 0.5;
-        setTilt({ x: px, y: py });
-      }}
-      onMouseLeave={() => setTilt({ x: 0, y: 0 })}
-    >
-      <svg className="absolute inset-0 size-full overflow-visible" preserveAspectRatio="none">
-        {edges.map(({ a, b }) => (
-          <motion.line
-            key={`${a}-${b}`}
-            x1={`${positions[a].x}%`}
-            y1={`${positions[a].y}%`}
-            x2={`${positions[b].x}%`}
-            y2={`${positions[b].y}%`}
-            stroke="var(--border)"
-            strokeWidth={1}
-            strokeDasharray="3 3"
-            initial={reduceMotion ? false : { opacity: 0 }}
-            animate={{ opacity: 0.55 }}
-            transition={{ duration: 1.2, delay: reduceMotion ? 0 : 0.4 + (a % 6) * 0.08 }}
-          />
+    <div ref={containerRef} className="hero-redaction" aria-hidden="true">
+      <div className="hero-redaction-text">
+        {Array.from({ length: 140 }).map((_, i) => (
+          <span key={i}>{TEXTURE_WORDS[i % TEXTURE_WORDS.length]}</span>
         ))}
-      </svg>
-      {cells.map((cell, index) => {
-        const pos = positions[index];
-        const depth = ((index % 5) + 1) / 5;
-        return (
-          <motion.span
-            key={cell.id}
-            className="hero-node"
-            style={{
-              left: `${pos.x}%`,
-              top: `${pos.y}%`,
-              background: identityDotColor[cell.identityType],
-            }}
-            initial={reduceMotion ? false : { opacity: 0, scale: 0 }}
-            animate={{
-              opacity: [0.55, 0.95, 0.55],
-              scale: 1,
-              x: tilt.x * 24 * depth,
-              y: tilt.y * 24 * depth,
-            }}
-            transition={{
-              opacity: { duration: 3 + (index % 4), repeat: Infinity, ease: "easeInOut", delay: (index % 7) * 0.2 },
-              scale: { duration: 0.5, delay: reduceMotion ? 0 : index * 0.01 },
-              x: { type: "spring", stiffness: 60, damping: 12 },
-              y: { type: "spring", stiffness: 60, damping: 12 },
-            }}
-          />
-        );
-      })}
+      </div>
+      <div className="hero-redaction-numeral font-serif">
+        <span>Murtad</span>
+        <span>Taghut</span>
+      </div>
+      <div className="hero-redaction-mask" />
     </div>
+  );
+}
+
+function DecodingHeadline() {
+  const reduceMotion = useReducedMotion();
+  const totalTicks = DECODE_WORDS.length * 2;
+  const [index, setIndex] = useState(0);
+  const settled = Boolean(reduceMotion) || index >= totalTicks;
+
+  useEffect(() => {
+    if (settled) return;
+    const t = setTimeout(() => setIndex((i) => i + 1), 110);
+    return () => clearTimeout(t);
+  }, [index, settled]);
+
+  return (
+    <motion.h1
+      className="headline-xl mt-7 max-w-5xl font-serif tracking-[-0.02em] text-[var(--foreground)]"
+      variants={fadeUp}
+      initial="hidden"
+      animate="visible"
+      transition={{ duration: reduceMotion ? 0 : 0.6, delay: reduceMotion ? 0 : 0.08 }}
+    >
+      {settled ? "Propaganda" : DECODE_WORDS[index % DECODE_WORDS.length]}
+    </motion.h1>
   );
 }
 
@@ -159,8 +142,21 @@ export function HeroSection() {
 
   return (
     <section className="relative min-h-[90vh] overflow-hidden border-b border-[var(--border)] py-16 sm:py-20 lg:min-h-[calc(100vh-4rem)] lg:py-24">
-      <div className="hero-glow" aria-hidden="true" />
-      <HeroNodeField identityCategories={report.identityCategories} />
+      <RedactionSpotlight />
+      <div className="absolute inset-0" aria-hidden="true">
+        <div
+          className="absolute inset-0"
+          style={{
+            background:
+              "linear-gradient(100deg, var(--background) 0%, color-mix(in srgb, var(--background) 88%, transparent) 42%, color-mix(in srgb, var(--background) 55%, transparent) 68%, color-mix(in srgb, var(--background) 30%, transparent) 100%)",
+          }}
+        />
+        <div
+          className="absolute inset-0"
+          style={{ background: "linear-gradient(0deg, var(--background) 0%, transparent 30%, transparent 80%, color-mix(in srgb, var(--background) 60%, transparent) 100%)" }}
+        />
+      </div>
+
       <Container className="relative grid min-h-[calc(90vh-8rem)] items-center gap-12">
         <div className="max-w-5xl">
           <nav className="relative mb-6 hidden gap-2 sm:flex" aria-label="Jump to section">
@@ -199,21 +195,22 @@ export function HeroSection() {
             <span className="bullet-marker" aria-hidden="true" />
             Interactive Investigation
           </motion.p>
-          <motion.h1
-            className="headline-xl mt-7 max-w-5xl font-serif tracking-[-0.02em] text-[var(--foreground)]"
-            variants={fadeUp}
-            initial="hidden"
-            animate="visible"
-            transition={{ ...transition, delay: reduceMotion ? 0 : 0.08 }}
-          >
-            Propaganda
-          </motion.h1>
+          <DecodingHeadline />
           <motion.span
             className="mt-4 block h-[3px] w-24 origin-left bg-[var(--accent)]"
             initial={reduceMotion ? false : { scaleX: 0 }}
             animate={{ scaleX: 1 }}
             transition={{ duration: reduceMotion ? 0 : 0.9, delay: reduceMotion ? 0 : 0.3, ease: [0.22, 1, 0.36, 1] }}
           />
+          <motion.p
+            className="mt-3 font-mono text-xs uppercase tracking-[0.08em] text-[var(--muted)]"
+            variants={fadeUp}
+            initial="hidden"
+            animate="visible"
+            transition={{ ...transition, delay: reduceMotion ? 0 : 0.12 }}
+          >
+            By {report.author} · {report.date} · Verified screenshots, archived Dec 2025
+          </motion.p>
           <motion.p
             className="editorial-copy mt-6 max-w-2xl text-[clamp(1.05rem,1.6vw,1.25rem)]"
             variants={fadeUp}
@@ -223,7 +220,7 @@ export function HeroSection() {
           >
             An analysis of extremist campaigns targeting the Bangladesh Armed Forces — a data-led examination of{" "}
             <span className="font-semibold text-[var(--foreground)]">
-              <CountValue value="61" />
+              <CountValue value="73" />
             </span>{" "}
             highly active profiles, recurring propaganda narratives, inauthentic identity tactics, and the exploitation of national events.
           </motion.p>

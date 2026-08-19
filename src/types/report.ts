@@ -47,16 +47,33 @@ export type ProfileGridCell = {
   isSyntheticDisplayIdentifier: true;
 };
 
+export type ProfileRecord = {
+  name: string | null;
+  postLink: string | null;
+  archiveLink: string | null;
+  profileLink: string | null;
+  classification: string | null;
+};
+
 export type NarrativeCategory = {
   id: string;
   title: string;
   description: string;
+  sourceLinks?: string[];
+};
+
+export type RootJustification = {
+  label: string;
+  text: string;
 };
 
 export type TimelinePoint = {
   year: string;
   title: string;
   description: string;
+  roots?: RootJustification[];
+  breakdown?: RootJustification[];
+  sourceLinks?: string[];
 };
 
 export type MethodologyStage = {
@@ -75,6 +92,11 @@ export type Limitation = {
   note: string;
 };
 
+export type Credit = {
+  role: string;
+  name: string;
+};
+
 export type ReportData = {
   title: string;
   author: string;
@@ -91,4 +113,5 @@ export type ReportData = {
   methodologyStages: MethodologyStage[];
   recommendations: Recommendation[];
   limitations: Limitation[];
+  credits: Credit[];
 };
