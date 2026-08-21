@@ -216,16 +216,30 @@ function ScreenshotPost({
   imageSrc,
   imageAlt,
   caption,
+  onPrev,
+  onNext,
+  hasPrev,
+  hasNext,
+  open: openProp,
+  onOpenChange,
 }: {
   post: ConversationPost;
   badge?: string;
   imageSrc?: string;
   imageAlt?: string;
   caption?: string;
+  onPrev?: () => void;
+  onNext?: () => void;
+  hasPrev?: boolean;
+  hasNext?: boolean;
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
 }) {
   const src = imageSrc ?? post.imageSrc;
   const alt = imageAlt ?? post.imageAlt;
-  const [open, setOpen] = useState(false);
+  const [internalOpen, setInternalOpen] = useState(false);
+  const open = openProp ?? internalOpen;
+  const setOpen = onOpenChange ?? setInternalOpen;
   const [scale, setScale] = useState(1);
   const [pan, setPan] = useState({ x: 0, y: 0 });
   const closeButtonRef = useRef<HTMLButtonElement>(null);
@@ -254,10 +268,13 @@ function ScreenshotPost({
       if (event.key === "Escape") setOpen(false);
       if (event.key === "+" || event.key === "=") zoomBy(0.5);
       if (event.key === "-") zoomBy(-0.5);
+      if (event.key === "ArrowRight" && hasNext) onNext?.();
+      if (event.key === "ArrowLeft" && hasPrev) onPrev?.();
     };
     document.addEventListener("keydown", onKeyDown);
     return () => document.removeEventListener("keydown", onKeyDown);
-  }, [open]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open, hasNext, hasPrev]);
 
   const onWheel = (event: React.WheelEvent) => {
     event.preventDefault();
@@ -349,6 +366,29 @@ function ScreenshotPost({
           >
             <X className="size-5" aria-hidden="true" />
           </button>
+
+          {onPrev ? (
+            <button
+              type="button"
+              onClick={onPrev}
+              disabled={!hasPrev}
+              aria-label="Previous"
+              className="fixed left-4 top-1/2 z-10 flex size-10 -translate-y-1/2 items-center justify-center border border-white/30 bg-black/60 text-white transition disabled:opacity-30 hover:not-disabled:text-[var(--accent)]"
+            >
+              <ChevronLeft className="size-5" aria-hidden="true" />
+            </button>
+          ) : null}
+          {onNext ? (
+            <button
+              type="button"
+              onClick={onNext}
+              disabled={!hasNext}
+              aria-label="Next"
+              className="fixed right-4 top-1/2 z-10 flex size-10 -translate-y-1/2 items-center justify-center border border-white/30 bg-black/60 text-white transition disabled:opacity-30 hover:not-disabled:text-[var(--accent)]"
+            >
+              <ChevronRight className="size-5" aria-hidden="true" />
+            </button>
+          ) : null}
 
           <div className="fixed bottom-4 left-1/2 z-10 flex -translate-x-1/2 items-center gap-1 border border-white/30 bg-black/60 p-1">
             <button
@@ -604,18 +644,19 @@ function CommentSlider({ comments }: { comments: Comment[] }) {
 export function IncidentPostSlider({ posts: incidentPosts }: { posts: ConversationPost[] }) {
   const [index, setIndex] = useState(0);
   const [paused, setPaused] = useState(false);
+  const [lightboxOpen, setLightboxOpen] = useState(false);
   const active = incidentPosts[index];
 
   const goPrev = () => setIndex((i) => Math.max(0, i - 1));
   const goNext = () => setIndex((i) => Math.min(incidentPosts.length - 1, i + 1));
 
   useEffect(() => {
-    if (paused || incidentPosts.length <= 1) return;
+    if (paused || lightboxOpen || incidentPosts.length <= 1) return;
     const timer = setInterval(() => {
       setIndex((i) => (i + 1) % incidentPosts.length);
     }, 4000);
     return () => clearInterval(timer);
-  }, [paused, incidentPosts.length]);
+  }, [paused, lightboxOpen, incidentPosts.length]);
 
   return (
     <div className="space-y-3" onMouseEnter={() => setPaused(true)} onMouseLeave={() => setPaused(false)}>
@@ -659,7 +700,16 @@ export function IncidentPostSlider({ posts: incidentPosts }: { posts: Conversati
           exit={{ opacity: 0, x: -16 }}
           transition={{ duration: 0.3 }}
         >
-          <ScreenshotPost post={active} badge="Verified post" />
+          <ScreenshotPost
+            post={active}
+            badge="Verified post"
+            onPrev={goPrev}
+            onNext={goNext}
+            hasPrev={index > 0}
+            hasNext={index < incidentPosts.length - 1}
+            open={lightboxOpen}
+            onOpenChange={setLightboxOpen}
+          />
         </motion.div>
       </AnimatePresence>
 
