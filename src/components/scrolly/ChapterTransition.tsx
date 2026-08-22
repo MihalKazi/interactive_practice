@@ -7,11 +7,13 @@ export function ChapterTransition({
   label,
   statement,
   dark = false,
+  statementClassName,
 }: {
-  number: string;
-  label: string;
+  number?: string;
+  label?: string;
   statement: string;
   dark?: boolean;
+  statementClassName?: string;
 }) {
   return (
     <section className={`chapter-transition ${dark ? "dark-chapter" : ""}`}>
@@ -22,9 +24,11 @@ export function ChapterTransition({
         viewport={{ once: true, amount: 0.4 }}
         transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
       >
-        <p className="font-serif text-8xl text-[var(--accent)]">{number}</p>
-        <p className="eyebrow mt-4 text-[var(--muted)]">{label}</p>
-        <h2 className="mt-5 max-w-4xl font-serif text-4xl leading-tight sm:text-6xl">{statement}</h2>
+        {number ? <p className="font-serif text-8xl text-[var(--accent)]">{number}</p> : null}
+        {label ? <p className="eyebrow mt-4 text-[var(--muted)]">{label}</p> : null}
+        <h2 className={statementClassName ?? "mt-5 max-w-4xl font-serif text-4xl leading-tight sm:text-6xl"}>
+          {statement}
+        </h2>
       </motion.div>
     </section>
   );

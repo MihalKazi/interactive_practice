@@ -177,6 +177,7 @@ const posts: ConversationPost[] = [
       "\"6 Bangladeshi peacekeepers killed in a drone attack at a UN base in Sudan\" — video report. Hostile replies underneath call withdrawing from the mission a religious duty and mock the state for calling the deaths a loss.",
     imageSrc: "/evidence/source/face-the-people-mainstream-media-post.png",
     imageAlt: "A video report from the Bengali digital outlet Face The People on the Sudan drone strike, with hostile Bengali-language comments visible beneath it",
+    sourceUrl: "https://www.facebook.com/reel/1803518986962025",
     comments: [
       {
         author: "Abdullah Adnan",
@@ -301,9 +302,6 @@ function ScreenshotPost({
   if (post.pending) {
     return (
       <div className="space-y-2">
-        <p className="font-mono text-xs font-bold uppercase tracking-[0.14em] text-[var(--muted)]">
-          {badge} · {post.name} · {post.dateLabel}
-        </p>
         <div className="flex min-h-[160px] items-center justify-center border border-dashed border-[var(--border)] bg-[var(--surface)]">
           <p className="p-6 text-center text-sm text-[var(--muted)]">Screenshot pending publication.</p>
         </div>
@@ -326,9 +324,6 @@ function ScreenshotPost({
 
   return (
     <div className="space-y-2">
-      <p className="font-mono text-xs font-bold uppercase tracking-[0.14em] text-[var(--muted)]">
-        {badge} · {post.name} · {post.dateLabel}
-      </p>
       <button
         type="button"
         onClick={() => setOpen(true)}
@@ -490,11 +485,29 @@ function CommentSlider({ comments }: { comments: Comment[] }) {
   const [index, setIndex] = useState(0);
   const [paused, setPaused] = useState(false);
   const [lightboxOpen, setLightboxOpen] = useState(false);
+  const [scale, setScale] = useState(1);
+  const [pan, setPan] = useState({ x: 0, y: 0 });
   const active = comments[index];
   const closeButtonRef = useRef<HTMLButtonElement>(null);
+  const dragState = useRef<{ startX: number; startY: number; panX: number; panY: number } | null>(null);
 
   const goPrev = () => setIndex((i) => Math.max(0, i - 1));
   const goNext = () => setIndex((i) => Math.min(comments.length - 1, i + 1));
+
+  const clampScale = (value: number) => Math.min(MAX_SCALE, Math.max(MIN_SCALE, value));
+
+  const zoomBy = (delta: number) => {
+    setScale((current) => {
+      const next = clampScale(current + delta);
+      if (next === MIN_SCALE) setPan({ x: 0, y: 0 });
+      return next;
+    });
+  };
+
+  const resetZoom = () => {
+    setScale(1);
+    setPan({ x: 0, y: 0 });
+  };
 
   useEffect(() => {
     if (paused || lightboxOpen || comments.length <= 1) return;
@@ -507,14 +520,44 @@ function CommentSlider({ comments }: { comments: Comment[] }) {
   useEffect(() => {
     if (!lightboxOpen) return;
     closeButtonRef.current?.focus();
+    resetZoom();
     const onKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape") setLightboxOpen(false);
+      if (event.key === "+" || event.key === "=") zoomBy(0.5);
+      if (event.key === "-") zoomBy(-0.5);
       if (event.key === "ArrowRight") goNext();
       if (event.key === "ArrowLeft") goPrev();
     };
     document.addEventListener("keydown", onKeyDown);
     return () => document.removeEventListener("keydown", onKeyDown);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [lightboxOpen, comments.length]);
+
+  useEffect(() => {
+    resetZoom();
+  }, [index]);
+
+  const onWheel = (event: React.WheelEvent) => {
+    event.preventDefault();
+    zoomBy(-event.deltaY * 0.0025);
+  };
+
+  const onPointerDown = (event: React.PointerEvent) => {
+    if (scale <= MIN_SCALE) return;
+    dragState.current = { startX: event.clientX, startY: event.clientY, panX: pan.x, panY: pan.y };
+  };
+
+  const onPointerMove = (event: React.PointerEvent) => {
+    if (!dragState.current) return;
+    setPan({
+      x: dragState.current.panX + (event.clientX - dragState.current.startX),
+      y: dragState.current.panY + (event.clientY - dragState.current.startY),
+    });
+  };
+
+  const endDrag = () => {
+    dragState.current = null;
+  };
 
   return (
     <div className="space-y-3" onMouseEnter={() => setPaused(true)} onMouseLeave={() => setPaused(false)}>
@@ -592,7 +635,8 @@ function CommentSlider({ comments }: { comments: Comment[] }) {
               role="dialog"
               aria-modal="true"
               aria-label={`Enlarged view: ${active.author}'s comment`}
-              className="fixed inset-0 z-[200] flex items-center justify-center bg-black/90 p-6"
+              className="fixed inset-0 z-[200] flex touch-none items-center justify-center overflow-hidden bg-black/90 p-6"
+              onWheel={onWheel}
             >
               <button
                 ref={closeButtonRef}
@@ -623,16 +667,62 @@ function CommentSlider({ comments }: { comments: Comment[] }) {
                 <ChevronRight className="size-5" aria-hidden="true" />
               </button>
 
-              <span className="fixed bottom-4 left-1/2 z-10 -translate-x-1/2 font-mono text-xs text-white/70">
+              <span className="fixed bottom-16 left-1/2 z-10 -translate-x-1/2 font-mono text-xs text-white/70">
                 Comment {index + 1} of {comments.length} — {active.author}
               </span>
 
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={active.imageSrc}
-                alt={active.imageAlt}
-                className="max-h-[80vh] max-w-[90vw] select-none object-contain"
-              />
+              <div className="fixed bottom-4 left-1/2 z-10 flex -translate-x-1/2 items-center gap-1 border border-white/30 bg-black/60 p-1">
+                <button
+                  type="button"
+                  onClick={() => zoomBy(-0.5)}
+                  disabled={scale <= MIN_SCALE}
+                  aria-label="Zoom out"
+                  className="flex size-9 items-center justify-center text-white transition disabled:opacity-30 hover:not-disabled:text-[var(--accent)]"
+                >
+                  <Minus className="size-4" aria-hidden="true" />
+                </button>
+                <span className="w-12 text-center font-mono text-xs text-white/80">{Math.round(scale * 100)}%</span>
+                <button
+                  type="button"
+                  onClick={() => zoomBy(0.5)}
+                  disabled={scale >= MAX_SCALE}
+                  aria-label="Zoom in"
+                  className="flex size-9 items-center justify-center text-white transition disabled:opacity-30 hover:not-disabled:text-[var(--accent)]"
+                >
+                  <Plus className="size-4" aria-hidden="true" />
+                </button>
+                <button
+                  type="button"
+                  onClick={resetZoom}
+                  disabled={scale === MIN_SCALE}
+                  aria-label="Reset zoom"
+                  className="flex size-9 items-center justify-center text-white transition disabled:opacity-30 hover:not-disabled:text-[var(--accent)]"
+                >
+                  <RotateCcw className="size-4" aria-hidden="true" />
+                </button>
+              </div>
+
+              <div
+                className="flex size-full items-center justify-center"
+                onPointerDown={onPointerDown}
+                onPointerMove={onPointerMove}
+                onPointerUp={endDrag}
+                onPointerLeave={endDrag}
+                onDoubleClick={() => (scale > MIN_SCALE ? resetZoom() : zoomBy(1))}
+              >
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={active.imageSrc}
+                  alt={active.imageAlt}
+                  draggable={false}
+                  className="max-h-[80vh] max-w-[90vw] select-none object-contain"
+                  style={{
+                    transform: `translate(${pan.x}px, ${pan.y}px) scale(${scale})`,
+                    cursor: scale > MIN_SCALE ? "grab" : "zoom-in",
+                    transition: dragState.current ? "none" : "transform 0.15s ease-out",
+                  }}
+                />
+              </div>
             </div>,
             document.body,
           )
@@ -647,8 +737,8 @@ export function IncidentPostSlider({ posts: incidentPosts }: { posts: Conversati
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const active = incidentPosts[index];
 
-  const goPrev = () => setIndex((i) => Math.max(0, i - 1));
-  const goNext = () => setIndex((i) => Math.min(incidentPosts.length - 1, i + 1));
+  const goPrev = () => setIndex((i) => (i - 1 + incidentPosts.length) % incidentPosts.length);
+  const goNext = () => setIndex((i) => (i + 1) % incidentPosts.length);
 
   useEffect(() => {
     if (paused || lightboxOpen || incidentPosts.length <= 1) return;
@@ -705,8 +795,8 @@ export function IncidentPostSlider({ posts: incidentPosts }: { posts: Conversati
             badge="Verified post"
             onPrev={goPrev}
             onNext={goNext}
-            hasPrev={index > 0}
-            hasNext={index < incidentPosts.length - 1}
+            hasPrev
+            hasNext
             open={lightboxOpen}
             onOpenChange={setLightboxOpen}
           />
@@ -717,16 +807,14 @@ export function IncidentPostSlider({ posts: incidentPosts }: { posts: Conversati
         <button
           type="button"
           onClick={goPrev}
-          disabled={index === 0}
-          className="font-mono text-xs uppercase tracking-[0.12em] text-[var(--muted)] transition disabled:opacity-30 hover:not-disabled:text-[var(--accent)]"
+          className="font-mono text-xs uppercase tracking-[0.12em] text-[var(--muted)] transition hover:text-[var(--accent)]"
         >
           ← Previous
         </button>
         <button
           type="button"
           onClick={goNext}
-          disabled={index === incidentPosts.length - 1}
-          className="font-mono text-xs uppercase tracking-[0.12em] text-[var(--muted)] transition disabled:opacity-30 hover:not-disabled:text-[var(--accent)]"
+          className="font-mono text-xs uppercase tracking-[0.12em] text-[var(--muted)] transition hover:text-[var(--accent)]"
         >
           Next →
         </button>
@@ -844,7 +932,7 @@ function pseudoRandom(seed: number) {
 }
 
 export function PatternReveal({ onClose }: { onClose: () => void }) {
-  const [clustered, setClustered] = useState(false);
+  const [clustered, setClustered] = useState(true);
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
 
   const allTriggeringComments = [
@@ -871,7 +959,7 @@ export function PatternReveal({ onClose }: { onClose: () => void }) {
   ];
 
   useEffect(() => {
-    const t = setTimeout(() => setClustered(true), 1800);
+    const t = setTimeout(() => setClustered(false), 2200);
     return () => clearTimeout(t);
   }, []);
 
@@ -918,11 +1006,11 @@ export function PatternReveal({ onClose }: { onClose: () => void }) {
           const sy = 15 + pseudoRandom(i + 0.5) * 70;
           const cx = 50 + (pseudoRandom(i + 1000) - 0.5) * 22;
           const cy = 46 + (pseudoRandom(i + 2000) - 0.5) * 22;
-          const target = clustered
-            ? c.flagged
-              ? { left: `${cx}%`, top: `${cy}%`, opacity: 1, scale: 1.4 }
-              : { left: `${sx}%`, top: `${sy}%`, opacity: 0.12, scale: 0.8 }
-            : { left: `${sx}%`, top: `${sy}%`, opacity: 0.85, scale: 1 };
+          const clusteredPos = c.flagged
+            ? { left: `${cx}%`, top: `${cy}%`, opacity: 1, scale: 1.4 }
+            : { left: `${sx}%`, top: `${sy}%`, opacity: 0.12, scale: 0.8 };
+          const scatteredPos = { left: `${sx}%`, top: `${sy}%`, opacity: 0.85, scale: 1 };
+          const target = clustered ? clusteredPos : scatteredPos;
           return (
             <motion.button
               key={`${c.postName}-${c.author}-${i}`}
@@ -939,13 +1027,13 @@ export function PatternReveal({ onClose }: { onClose: () => void }) {
                 outline: activeIndex === i ? "2px solid white" : "none",
                 outlineOffset: 3,
               }}
-              initial={{ left: `${sx}%`, top: `${sy}%`, opacity: 0, scale: 0.6 }}
+              initial={{ ...clusteredPos, opacity: 0, scale: clusteredPos.scale * 0.7 }}
               animate={target}
               transition={{
                 type: "spring",
                 stiffness: 45,
                 damping: 16,
-                delay: clustered ? pseudoRandom(i + 3000) * 1.1 : i * 0.045,
+                delay: clustered ? pseudoRandom(i + 3000) * 0.6 : i * 0.045,
               }}
             >
               {c.author}
@@ -957,7 +1045,8 @@ export function PatternReveal({ onClose }: { onClose: () => void }) {
             <motion.div
               initial={{ opacity: 0, scale: 0.8 }}
               animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 1.4, duration: 0.8 }}
+              exit={{ opacity: 0, scale: 0.85 }}
+              transition={{ delay: 0.3, duration: 0.6 }}
               className="pointer-events-none absolute left-1/2 top-1/2 z-20 w-[min(90vw,640px)] -translate-x-1/2 -translate-y-1/2 bg-black/90 px-10 py-8 text-center shadow-[0_0_80px_20px_rgba(0,0,0,0.9)]"
             >
               <p className="font-serif text-5xl italic sm:text-6xl" style={{ color: "var(--warning)" }}>
@@ -997,6 +1086,102 @@ export function PatternReveal({ onClose }: { onClose: () => void }) {
   );
 }
 
+const triggeringEventCards: { title: string; intro: React.ReactNode }[] = [
+  {
+    title: "The Prime Minister's condolence post",
+    intro: (
+      <p>
+        Posted hours after the strike. The comment section is entered by accounts calling the dead &quot;murtad&quot;
+        and &quot;taghut,&quot; disputing their martyrdom status.
+      </p>
+    ),
+  },
+  {
+    title: "The opposition party's condolence post",
+    intro: (
+      <p>
+        At least 28 of 97 comments on this post used the term &quot;murtad&quot; directly, mocking the
+        &quot;martyr&quot; framing.
+      </p>
+    ),
+  },
+  {
+    title: "The official Navy page's condolence post",
+    intro: (
+      <p>
+        The same reframing pattern repeats on the Navy&apos;s own page — an official institutional account, not a
+        fringe one.
+      </p>
+    ),
+  },
+  {
+    title: "A pattern, not an isolated reaction",
+    intro: (
+      <p>
+        Across all three condolence posts, accounts disputed and mocked the framing of the dead as martyrs —
+        comparable hostile rhetoric also surfaced across mainstream media commentary in the same period.
+      </p>
+    ),
+  },
+];
+
+export function TriggeringEventDeck({ onShowPattern }: { onShowPattern?: () => void }) {
+  return (
+    <section
+      id="triggering-event"
+      aria-labelledby="triggering-event-title"
+      className="dark-chapter scroll-mt-24 border-t border-[var(--border)] px-5 py-16 sm:px-8 lg:px-12"
+    >
+      <div className="mx-auto max-w-6xl">
+        <p className="eyebrow text-[var(--accent)]">Triggering event</p>
+        <h2 id="triggering-event-title" className="mt-3 max-w-3xl font-serif text-3xl font-semibold leading-tight">
+          How public mourning was reframed
+        </h2>
+
+        <div className="mt-10 space-y-16">
+          {posts.map((post, index) => (
+            <div
+              key={post.id}
+              id={`trigger-post-${post.id}`}
+              className={`scroll-mt-24 ${index > 0 ? "border-t border-[var(--border)] pt-16" : ""}`}
+            >
+              <h3 className="text-xl font-semibold leading-snug">{triggeringEventCards[index].title}</h3>
+              <div className="mt-2 text-sm leading-6 text-[var(--muted)]">{triggeringEventCards[index].intro}</div>
+              {post.sourceUrl ? (
+                <a
+                  href={post.sourceUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="mt-2 inline-block w-fit font-semibold text-[var(--accent)] underline decoration-[var(--border)] underline-offset-4 transition hover:decoration-[var(--accent)]"
+                >
+                  Original post, {post.dateLabel} ↗
+                </a>
+              ) : null}
+
+              <div className="mt-6 grid gap-8 lg:grid-cols-2">
+                <ScreenshotPost post={post} badge="Verified post" />
+                {post.comments?.length ? <CommentSlider comments={post.comments} /> : null}
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {onShowPattern ? (
+          <div className="mt-10">
+            <button
+              type="button"
+              onClick={onShowPattern}
+              className="inline-flex items-center gap-2 border border-[var(--accent)] px-4 py-2 font-mono text-xs uppercase tracking-[0.14em] text-[var(--accent)] transition hover:bg-[var(--accent)] hover:text-[var(--dark-section)]"
+            >
+              See the full pattern →
+            </button>
+          </div>
+        ) : null}
+      </div>
+    </section>
+  );
+}
+
 export function TriggeringVisual({ step, stepProgress }: { step: number; stepProgress?: number }) {
   const progress = stepProgress ?? 1;
   const activePost = posts[Math.min(step, posts.length - 1)];
@@ -1019,10 +1204,6 @@ export function TriggeringVisual({ step, stepProgress }: { step: number; stepPro
 
   return (
     <div className="space-y-3">
-      <p className="eyebrow text-[var(--muted)]">
-        {`${step + 1} of ${posts.length} — ${activePost?.name}`}
-      </p>
-
       <AnimatePresence mode="wait">
         <motion.div
           key={postId}
@@ -1255,9 +1436,9 @@ export function TimelineVisual({ step }: { step: number }) {
                               href={link}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="mt-1 block break-all font-mono text-[10px] text-[var(--muted)] underline decoration-[var(--border)] underline-offset-4 hover:text-[var(--accent)]"
+                              className="mt-2 inline-block font-mono text-[10px] uppercase tracking-[0.1em] text-[var(--accent)] underline decoration-[var(--border)] underline-offset-4 hover:decoration-[var(--accent)]"
                             >
-                              {link}
+                              Go to permanent archive ↗
                             </a>
                           </div>
                         ))}

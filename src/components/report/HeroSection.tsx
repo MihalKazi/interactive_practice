@@ -1,11 +1,9 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { motion, type Transition, useReducedMotion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 import Image from "next/image";
-import { Button } from "@/components/ui/Button";
 import { Container } from "@/components/ui/Container";
-import { useReportContent } from "@/components/providers/ReportContentProvider";
 
 const fadeUp = {
   hidden: { opacity: 0, y: 18 },
@@ -24,7 +22,7 @@ function HeroPhoto() {
           fill
           priority
           sizes="100vw"
-          className="object-cover"
+          className="object-contain object-right min-[1441px]:object-center"
         />
       </div>
     </div>
@@ -69,24 +67,13 @@ function DecodingHeadline() {
 }
 
 export function HeroSection() {
-  const report = useReportContent();
   const reduceMotion = useReducedMotion();
-  const transition: Transition = {
-    duration: reduceMotion ? 0 : 0.75,
-    ease: [0.22, 1, 0.36, 1] as [number, number, number, number],
-  };
 
   return (
     <section className="relative min-h-[90vh] overflow-hidden border-b border-[var(--border)] py-16 sm:py-20 lg:min-h-[calc(100vh-4rem)] lg:py-24">
       <HeroPhoto />
       <div className="absolute inset-0" aria-hidden="true">
-        <div
-          className="absolute inset-0"
-          style={{
-            background:
-              "linear-gradient(100deg, var(--background) 0%, color-mix(in srgb, var(--background) 88%, transparent) 42%, color-mix(in srgb, var(--background) 55%, transparent) 68%, color-mix(in srgb, var(--background) 30%, transparent) 100%)",
-          }}
-        />
+        <div className="hero-scrim-diagonal absolute inset-0" />
         <div
           className="absolute inset-0"
           style={{ background: "linear-gradient(0deg, var(--background) 0%, transparent 30%, transparent 80%, color-mix(in srgb, var(--background) 60%, transparent) 100%)" }}
@@ -95,16 +82,6 @@ export function HeroSection() {
 
       <Container className="relative grid min-h-[calc(90vh-8rem)] items-center gap-12">
         <div className="max-w-5xl">
-          <motion.p
-            className="dossier-line font-mono text-xs uppercase tracking-[0.2em] text-[var(--accent)]"
-            variants={fadeUp}
-            initial="hidden"
-            animate="visible"
-            transition={transition}
-          >
-            <span className="bullet-marker" aria-hidden="true" />
-            Interactive Investigation
-          </motion.p>
           <DecodingHeadline />
           <motion.span
             className="mt-4 block h-[3px] w-24 origin-left bg-[var(--accent)]"
@@ -117,41 +94,12 @@ export function HeroSection() {
             variants={fadeUp}
             initial="hidden"
             animate="visible"
-            transition={{ ...transition, delay: reduceMotion ? 0 : 0.12 }}
+            transition={{ duration: reduceMotion ? 0 : 0.75, delay: reduceMotion ? 0 : 0.12, ease: [0.22, 1, 0.36, 1] }}
           >
-            By {report.author} · {report.date} · Verified screenshots, archived Dec 2025
-          </motion.p>
-          <motion.div
-            className="mt-9 flex flex-col gap-3 sm:flex-row"
-            variants={fadeUp}
-            initial="hidden"
-            animate="visible"
-            transition={{ ...transition, delay: reduceMotion ? 0 : 0.32 }}
-          >
-            <Button href="#triggering-event">Begin the investigation</Button>
-            <Button href="#methodology" variant="secondary">Explore the methodology</Button>
-          </motion.div>
-          <motion.p
-            className="mt-5 max-w-2xl text-xs leading-6 text-(--muted)"
-            variants={fadeUp}
-            initial="hidden"
-            animate="visible"
-            transition={{ ...transition, delay: reduceMotion ? 0 : 0.4 }}
-          >
-            This investigation references extremist rhetoric and incitement. Potentially harmful material is presented only where necessary for public-interest reporting.
+            By Activate Rights · August 12, 2026
           </motion.p>
         </div>
       </Container>
-
-      <motion.a
-        href="#triggering-event"
-        className="absolute bottom-6 left-5 hidden text-xs font-semibold uppercase tracking-[0.16em] text-[var(--muted)] sm:block"
-        initial={reduceMotion ? false : { opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.8, delay: 0.8 }}
-      >
-        Scroll to investigate
-      </motion.a>
     </section>
   );
 }

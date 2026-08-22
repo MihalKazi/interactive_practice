@@ -3,7 +3,7 @@ import { ProfileIdentityGrid } from "@/components/data/ProfileIdentityGrid";
 
 export function DatasetPreview() {
   return (
-    <div className="mt-12">
+    <div>
       <IdeologicalDistribution />
       <ProfileIdentityGrid />
     </div>

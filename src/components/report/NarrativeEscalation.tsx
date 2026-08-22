@@ -72,7 +72,7 @@ export function NarrativeEscalation({ narrativeCategories }: { narrativeCategori
   };
 
   return (
-    <section aria-labelledby="narratives-title" className="border-t border-[var(--border)] px-5 py-16 sm:px-8 lg:px-12">
+    <section aria-labelledby="narratives-title" className="dark-chapter dark-chapter-lined px-5 py-16 sm:px-8 lg:px-12">
       <p id="narratives-title" className="sr-only">Narrative escalation board</p>
       <div className="mx-auto max-w-5xl">
         <p className="font-mono text-xs uppercase tracking-[0.14em] text-[var(--muted)]">
@@ -178,7 +178,7 @@ export function NarrativeEscalation({ narrativeCategories }: { narrativeCategori
                   <motion.div
                     layoutId={`narrative-pin-${expanded.id}`}
                     transition={{ type: "spring", stiffness: 300, damping: 28 }}
-                    className="relative z-10 max-h-[85vh] w-full max-w-lg overflow-y-auto border border-[var(--border)] bg-[var(--surface-elevated)] p-6 text-left shadow-2xl"
+                    className="relative z-10 max-h-[85vh] w-full max-w-2xl overflow-y-auto border border-[var(--border)] bg-[var(--surface-elevated)] p-6 text-left shadow-2xl"
                   >
                     <Pin
                       className="absolute -top-3 left-1/2 size-6 -translate-x-1/2 -rotate-12"
@@ -203,7 +203,7 @@ export function NarrativeEscalation({ narrativeCategories }: { narrativeCategori
                     <h3 className="mt-2 text-xl font-semibold">{expanded.title.replace(/^\d\.\d\s*—\s*/, "")}</h3>
                     <p className="mt-3 text-sm leading-6 text-[var(--muted)]">{expanded.description}</p>
 
-                    <div className="mt-5 space-y-4">
+                    <div className="mt-5 grid gap-4 sm:grid-cols-2">
                       {expanded.sourceLinks?.map((link) => {
                         const known = reusedScreenshots[link];
                         return (
@@ -222,9 +222,9 @@ export function NarrativeEscalation({ narrativeCategories }: { narrativeCategori
                               href={link}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="mt-1 block break-all font-mono text-[10px] text-[var(--muted)] underline decoration-[var(--border)] underline-offset-4 hover:text-[var(--accent)]"
+                              className="mt-2 inline-block font-mono text-[10px] uppercase tracking-[0.1em] text-[var(--accent)] underline decoration-[var(--border)] underline-offset-4 hover:decoration-[var(--accent)]"
                             >
-                              {link}
+                              Go to permanent archive ↗
                             </a>
                           </div>
                         );
