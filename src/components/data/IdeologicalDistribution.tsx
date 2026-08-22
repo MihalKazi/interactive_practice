@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo } from "react";
-import { Bar, BarChart, Cell, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
+import { Bar, BarChart, Cell, LabelList, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { useReportContent } from "@/components/providers/ReportContentProvider";
 import { buildAccessibleChartSummary, validateCategoryTotal } from "@/lib/report-data";
 import type { IdeologicalCategory } from "@/types/report";
@@ -31,19 +31,11 @@ export function IdeologicalDistribution() {
   const summary = buildAccessibleChartSummary(categories);
 
   return (
-    <section aria-labelledby="ideological-distribution-title" className="mt-12 border-t border-[var(--border)] pt-10">
+    <section aria-labelledby="ideological-distribution-title" className="border-t border-[var(--border)] pt-4">
       <div>
         <div>
           <div className="flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
-            <div>
-              <p className="eyebrow text-[var(--accent)]">n=73</p>
-              <h3 id="ideological-distribution-title" className="mt-3 text-3xl font-semibold">
-                Ideological classification
-              </h3>
-              <p className="mt-3 max-w-2xl text-sm leading-7 text-[var(--muted)]">
-                Five verified aggregate classifications from the analysed sample.
-              </p>
-            </div>
+            <p id="ideological-distribution-title" className="sr-only">Ideological classification</p>
           </div>
 
           <p className="sr-only">{summary}</p>
@@ -57,6 +49,13 @@ export function IdeologicalDistribution() {
                   {data.map((entry) => (
                     <Cell key={entry.id} fill="var(--data-primary)" />
                   ))}
+                  <LabelList
+                    dataKey="displayValue"
+                    position="right"
+                    fill="var(--foreground)"
+                    fontSize={13}
+                    fontFamily="var(--font-mono)"
+                  />
                 </Bar>
               </BarChart>
             </ResponsiveContainer>

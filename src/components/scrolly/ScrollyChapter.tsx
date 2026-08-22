@@ -99,7 +99,7 @@ export function ScrollyChapter({
       </p>
       <div className="mx-auto max-w-7xl gap-10 px-5 py-16 sm:px-8 lg:grid lg:grid-cols-[0.4fr_0.6fr] lg:px-12">
         <motion.div
-          className={`hidden lg:block ${stickySupported ? "lg:sticky lg:top-24" : ""} lg:order-2 lg:self-start`}
+          className={`hidden lg:block ${stickySupported ? "lg:sticky lg:top-24 lg:max-h-[calc(100vh-7rem)] lg:overflow-y-auto lg:overscroll-contain" : ""} lg:order-2 lg:self-start`}
           {...enterProps}
         >
           <StickyVisualStage title={visualTitle} source={source} caption={caption} hideHeader={hideVisualHeader}>
