@@ -50,6 +50,7 @@
   --color-foreground: var(--foreground);
   --font-sans: var(--font-sans);
   --font-serif: var(--font-serif);
+  --font-mono: var(--font-mono);
 }
 
 .dataset-toggle {
@@ -137,7 +138,7 @@ body {
     var(--background);
   background-size: auto, 26px 26px, auto;
   color: var(--foreground);
-  font-family: var(--font-sans), system-ui, sans-serif;
+  font-family: var(--font-sans), var(--font-bengali-sans), system-ui, sans-serif;
   text-rendering: optimizeLegibility;
 }
 
@@ -155,7 +156,7 @@ a {
 }
 
 .font-serif {
-  font-family: var(--font-serif), Georgia, serif;
+  font-family: var(--font-serif), var(--font-bengali-serif), Georgia, serif;
 }
 
 .eyebrow {
