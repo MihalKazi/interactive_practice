@@ -176,6 +176,13 @@ a {
   line-height: 1;
 }
 
+.headline-hero {
+  font-size: clamp(2.25rem, 6vw, 5.25rem);
+  line-height: 1.05;
+  font-weight: 600;
+  text-shadow: 0 2px 24px color-mix(in srgb, var(--background) 80%, transparent);
+}
+
 .editorial-copy {
   max-width: 42rem;
   font-size: clamp(1rem, 1.2vw, 1.125rem);
@@ -272,6 +279,31 @@ a {
   display: flex;
   align-items: center;
   gap: 0.9rem;
+}
+
+.comment-flagged-glow {
+  animation: comment-glow-pulse 2.2s ease-in-out infinite;
+}
+
+@keyframes comment-glow-pulse {
+  0%,
+  100% {
+    text-shadow:
+      0 0 4px color-mix(in srgb, var(--warning) 75%, transparent),
+      0 0 10px color-mix(in srgb, var(--warning) 35%, transparent);
+  }
+  50% {
+    text-shadow:
+      0 0 9px color-mix(in srgb, var(--warning) 90%, transparent),
+      0 0 22px color-mix(in srgb, var(--warning) 55%, transparent);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .comment-flagged-glow {
+    animation: none;
+    text-shadow: 0 0 6px color-mix(in srgb, var(--warning) 60%, transparent);
+  }
 }
 
 .bullet-marker {
@@ -683,31 +715,6 @@ a {
 
 .root-timeline-visual {
   width: 100%;
-}
-
-.hero-redaction {
-  position: absolute;
-  inset: 0;
-  overflow: hidden;
-}
-
-.hero-redaction-photo {
-  position: absolute;
-  inset: 0;
-  opacity: 0.9;
-}
-
-.hero-redaction-photo::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(180deg, transparent 45%, var(--background) 92%);
-}
-
-@media (min-width: 640px) {
-  .hero-redaction-photo::after {
-    background: linear-gradient(100deg, var(--background) 0%, transparent 45%);
-  }
 }
 
 .hero-scrim-diagonal {
