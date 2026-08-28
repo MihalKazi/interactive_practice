@@ -8,6 +8,7 @@ import { ChevronLeft, ChevronRight, Minus, Plus, RotateCcw, UserRoundX, X } from
 import { CountValue } from "@/components/report/StatGrid";
 import { LinkPreviewCard } from "@/components/ui/LinkPreviewCard";
 import { useReportContent } from "@/components/providers/ReportContentProvider";
+import { profileRecords } from "@/data/profile-records";
 
 type Comment = {
   author: string;
@@ -958,6 +959,18 @@ export function PatternReveal({ onClose }: { onClose: () => void }) {
     })),
   ];
 
+  const quotedAuthors = new Set(allTriggeringComments.map((c) => c.author.trim().toLowerCase()));
+  const datasetOnlyProfiles = profileRecords
+    .filter((profile) => profile.name && !quotedAuthors.has(profile.name.trim().toLowerCase()))
+    .map((profile) => ({
+      author: profile.name as string,
+      postName: `Dataset · ${profile.classification ?? "unclassified"}`,
+      text: `One of the 73 profiles identified in this investigation as spreading "murtad"/"taghut" narratives against the armed forces. Classification: ${profile.classification ?? "unclassified"}.`,
+      flagged: true,
+    }));
+
+  allTriggeringComments.push(...datasetOnlyProfiles);
+
   useEffect(() => {
     const t = setTimeout(() => setClustered(false), 2200);
     return () => clearTimeout(t);
@@ -1002,8 +1015,17 @@ export function PatternReveal({ onClose }: { onClose: () => void }) {
       </button>
       <div className="relative mx-auto h-full max-w-5xl">
         {allTriggeringComments.map((c, i) => {
-          const sx = 10 + pseudoRandom(i) * 80;
-          const sy = 15 + pseudoRandom(i + 0.5) * 70;
+          const count = allTriggeringComments.length;
+          const cols = Math.max(6, Math.ceil(Math.sqrt(count * 1.7)));
+          const rows = Math.ceil(count / cols);
+          const col = i % cols;
+          const row = Math.floor(i / cols);
+          const cellW = 84 / cols;
+          const cellH = 76 / rows;
+          const jitterX = (pseudoRandom(i + 4000) - 0.5) * cellW * 0.5;
+          const jitterY = (pseudoRandom(i + 5000) - 0.5) * cellH * 0.5;
+          const sx = 8 + (col + 0.5) * cellW + jitterX;
+          const sy = 14 + (row + 0.5) * cellH + jitterY;
           const cx = 50 + (pseudoRandom(i + 1000) - 0.5) * 22;
           const cy = 46 + (pseudoRandom(i + 2000) - 0.5) * 22;
           const clusteredPos = c.flagged
@@ -1021,9 +1043,13 @@ export function PatternReveal({ onClose }: { onClose: () => void }) {
               onFocus={() => setActiveIndex(i)}
               onBlur={() => setActiveIndex((cur) => (cur === i ? null : cur))}
               onClick={() => setActiveIndex((cur) => (cur === i ? null : i))}
-              className="absolute max-w-[42vw] -translate-x-1/2 -translate-y-1/2 cursor-pointer touch-manipulation truncate border-0 bg-transparent p-1 font-mono text-[10px] uppercase tracking-[0.04em] sm:max-w-none sm:whitespace-nowrap"
+              className={`absolute -translate-x-1/2 -translate-y-1/2 cursor-pointer touch-manipulation truncate whitespace-nowrap border-0 bg-transparent p-1 font-mono text-[9px] uppercase tracking-[0.02em] ${
+                c.flagged && !clustered ? "comment-flagged-glow" : ""
+              }`}
               style={{
+                maxWidth: `${cellW}%`,
                 color: c.flagged ? "var(--warning)" : "var(--muted)",
+                fontWeight: c.flagged ? 700 : 400,
                 outline: activeIndex === i ? "2px solid white" : "none",
                 outlineOffset: 3,
               }}
@@ -1167,14 +1193,35 @@ export function TriggeringEventDeck({ onShowPattern }: { onShowPattern?: () => v
         </div>
 
         {onShowPattern ? (
-          <div className="mt-10">
-            <button
+          <div className="mt-14 flex flex-col items-center gap-3 text-center">
+            <p className="font-mono text-[11px] uppercase tracking-[0.2em] text-[var(--muted)]">
+              73 profiles · one coordinated pattern
+            </p>
+            <motion.button
               type="button"
               onClick={onShowPattern}
-              className="inline-flex items-center gap-2 border border-[var(--accent)] px-4 py-2 font-mono text-xs uppercase tracking-[0.14em] text-[var(--accent)] transition hover:bg-[var(--accent)] hover:text-[var(--dark-section)]"
+              className="group relative inline-flex items-center gap-3 rounded-sm border border-[var(--accent)] bg-[color-mix(in_srgb,var(--accent)_10%,transparent)] px-7 py-3.5 font-mono text-sm uppercase tracking-[0.14em] text-[var(--accent)] transition hover:bg-[var(--accent)] hover:text-[var(--dark-section)]"
+              animate={{
+                boxShadow: [
+                  "0 0 0 0 color-mix(in srgb, var(--accent) 35%, transparent)",
+                  "0 0 0 8px color-mix(in srgb, var(--accent) 0%, transparent)",
+                ],
+              }}
+              transition={{ duration: 1.8, repeat: Infinity, ease: "easeOut" }}
             >
-              See the full pattern →
-            </button>
+              See the full pattern
+              <span className="inline-flex items-center gap-0.5" aria-hidden="true">
+                {[0, 1, 2].map((i) => (
+                  <motion.span
+                    key={i}
+                    className="block h-1 w-1 rounded-full bg-current"
+                    animate={{ y: [0, -3, 0], opacity: [0.35, 1, 0.35] }}
+                    transition={{ duration: 0.9, repeat: Infinity, ease: "easeInOut", delay: i * 0.15 }}
+                  />
+                ))}
+              </span>
+              <span className="transition-transform group-hover:translate-x-1">→</span>
+            </motion.button>
           </div>
         ) : null}
       </div>

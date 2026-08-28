@@ -5,6 +5,7 @@ import { SiteHeader } from "@/components/layout/SiteHeader";
 import { DatasetPreview } from "@/components/report/DatasetPreview";
 import { EditorialSection } from "@/components/report/EditorialSection";
 import { HeroSection } from "@/components/report/HeroSection";
+import { ImpactDropCap } from "@/components/report/ImpactDropCap";
 import { IntroSequence } from "@/components/report/IntroSequence";
 import { NarrativeEscalation } from "@/components/report/NarrativeEscalation";
 import { TimelinePreview } from "@/components/report/TimelinePreview";
@@ -24,8 +25,9 @@ export default async function Home() {
         <div className="border-t border-[var(--border)] px-5 py-14 sm:px-8 lg:px-12">
           <div className="mx-auto max-w-[65ch]">
             <div className="space-y-5 font-serif text-xl leading-9 text-[var(--foreground)]">
-              <p className="first-letter:float-left first-letter:mr-2 first-letter:font-serif first-letter:text-6xl first-letter:font-semibold first-letter:leading-[0.85] first-letter:text-[var(--accent)]">
-                <strong className="font-semibold">Six Bangladeshi peacekeepers lost their lives and nine others
+              <p>
+                <ImpactDropCap letter="S" />
+                <strong className="font-semibold">ix Bangladeshi peacekeepers lost their lives and nine others
                 sustained injuries</strong> during a drone attack on a UN peacekeeping base in Abyei, Sudan, on
                 December 13, 2025. The attack prompted national grief, with state leaders and major political
                 figures issuing public condolences.
