@@ -11,10 +11,10 @@ import { NarrativeEscalation } from "@/components/report/NarrativeEscalation";
 import { TimelinePreview } from "@/components/report/TimelinePreview";
 import { ChapterTransition } from "@/components/scrolly/ChapterTransition";
 import { TriggeringEventScrolly } from "@/components/scrolly/TriggeringEventScrolly";
-import { getReportContent } from "@/lib/report-content-store";
+import { defaultReport } from "@/data/report";
 
 export default async function Home() {
-  const report = await getReportContent();
+  const report = defaultReport;
   return (
     <>
       <IntroSequence />

@@ -2,7 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { IBM_Plex_Mono, IBM_Plex_Sans, Newsreader, Noto_Sans_Bengali, Noto_Serif_Bengali } from "next/font/google";
 import { ScrollToTop } from "@/components/layout/ScrollToTop";
 import { ReportContentProvider } from "@/components/providers/ReportContentProvider";
-import { getReportContent } from "@/lib/report-content-store";
+import { defaultReport } from "@/data/report";
 import "./globals.css";
 
 const sans = IBM_Plex_Sans({
@@ -68,7 +68,7 @@ export const viewport: Viewport = {
 export const dynamic = "force-dynamic";
 
 export default async function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
-  const reportContent = await getReportContent();
+  const reportContent = defaultReport;
   return (
     <html
       lang="en"
