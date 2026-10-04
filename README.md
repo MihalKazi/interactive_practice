@@ -163,3 +163,4 @@ The project separates documented findings, analysis, limitations, and recommenda
 Release infrastructure is present but defaults to zero publication. Use `npm run evidence:release-check`, `npm run evidence:release-summary`, `npm run evidence:release-simulate`, `npm run evidence:build`, and `npm run evidence:validate`. All six items remain blocked; mappings remain pending; `allowPublication` and `publicationApproved` remain false; `public/evidence/approved/` should contain only `.gitkeep`. See `docs/evidence-release-workflow.md`.
 
 **Live site:** https://interactive-practice-omega.vercel.app
+
